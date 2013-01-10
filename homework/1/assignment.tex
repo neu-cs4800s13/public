@@ -1,7 +1,7 @@
 \documentclass{article}
 
 \title{Homework 1}
-\author{Here, Your N.}
+\author{Carl Eastlund}
 \date{Due \textbf{Wed., Jan. 16} at \textbf{9:00pm}.}
 
 %% Fonts
@@ -83,7 +83,9 @@
   same directory as this PDF.
   \begin{enumerate}
   \item
-    Import the course software for your solution.
+    Import the course software from \texttt{software/cs4800.rkt} into your
+    solution using
+    \href{http://docs.racket-lang.org/reference/require.html}{\texttt{require}}.
   \item
     Write a function \texttt{flatten-lists} to ``flatten'' a nested list
     structure into a single list.  For example, the following expressions:
@@ -105,7 +107,12 @@
     \texttt{cons}).
   \item
     For full credit, \texttt{flatten-lists} must run in \(O(n)\) time, where
-    \(n\) is the combined length of the lists in its input.
+    \(n\) is the combined length of the lists in its input.  Use
+    \texttt{define/cost} to define \texttt{flatten-lists} and any helper
+    functions.  Define a \texttt{cost-model} for the built-in functions that you
+    use.  Use the function \texttt{O?} we defined in
+    \texttt{lectures/lecture-2013-01-10.rkt} to demonstrate that
+    \texttt{flatten-lists} runs in \(O(n)\) time.
   \item
     For extra credit, write \texttt{flatten-lists} so that every \texttt{cons}
     it creates is part of its final output.  In other words, make sure it never
