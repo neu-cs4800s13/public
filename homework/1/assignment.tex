@@ -4,6 +4,7 @@
 \author{Here, Your N.}
 \date{Due \textbf{Wed., Jan. 16} at \textbf{9:00pm}.}
 
+%% URL formatting and PDF hyperlinks
 \usepackage{url}
 \usepackage{hyperref}
 
@@ -11,23 +12,51 @@
 
 \maketitle
 
+\newcommand\link[2][http://]{\href{#1#2}{\nolinkurl{#2}}}
+\newcommand\http[1]{\link[http://]{#1}}
+\newcommand\https[1]{\link[https://]{#1}}
+\newcommand\email[1]{\link[mailto:]{#1}}
+
+\begin{quotation}
+
+  \noindent \textbf{Collaboration Policy:} Your work on this assignment must be
+  your own.  You \emph{may not} copy files from other students in this class,
+  from people outside of the class, from the internet, or from any other source.
+  You \emph{may not} share files with other students in this class.
+
+  \medskip
+
+  \noindent You \emph{may} discuss the problems, concepts, and general
+  techniques used in this assignment with other students, so long as you do not
+  share actual solutions.
+
+  \medskip
+
+  \noindent If you are in doubt about what you \emph{may} and \emph{may not} do,
+  ask the course instructor before proceeding.  If you violate the collaboration
+  policy, you will receive a zero as your grade for this entire assignment and
+  you will be reported to OSCCR (\link{northeastern.edu/osccr}).
+
+\end{quotation}
+
 \begin{enumerate}
 
+\pagebreak[1]
 \item
   You need to sign up for a Github account in order to submit homework in this
   class.
   \begin{enumerate}
   \item
-    Make an account on \url{github.com}.
+    Make an account on \link{github.com}.
   \item
-    Send an email to the instructor at \url{cce@ccs.neu.edu} with the subject
+    Send an email to the instructor at \email{cce@ccs.neu.edu} with the subject
     ``CS4800 Github Account''.  The body of the email must contain your name and
     your Github account name.  You will receive a response within 24 hours with
     the URL to a private Github account for your work in this course.
   \item
     Your private repository will start with only some of the files you need for
     this assignment.  The public repository at
-    \url{github.com/neu-cs4800s13/public} has the files you need.  Use
+    \link{github.com/neu-cs4800s13/public} has the files you need.  Use
     \texttt{git merge}, \texttt{git rebase}, or some similar tool to import the
     revision history from the public repository into your private repository.
     You will \emph{not} get full credit for just uploading new copies of each
@@ -38,6 +67,7 @@
     due date will be graded.
   \end{enumerate}
 
+\pagebreak[1]
 \item
   Programming in this course will be done in Racket, and will use additional
   Racket libraries provided for the course.  Write your solutions for this
@@ -50,18 +80,16 @@
     Write a function \texttt{flatten-lists} to ``flatten'' a nested list
     structure into a single list.  For example, the following expressions:
     \begin{verbatim}
-      (flatten-lists (list))
-      (flatten-lists (list 2 3))
-      (flatten-lists (list 1 (list 2 3) 4))
-      (flatten-lists (list (list 1 (list 2 3) 4) (list 5 (list 6 7) 8)))
-    \end{verbatim}
+(flatten-lists (list))
+(flatten-lists (list 2 3))
+(flatten-lists (list 1 (list 2 3) 4))
+(flatten-lists (list (list 1 (list 2 3) 4) (list 5 (list 6 7) 8))) \end{verbatim}
     \dots should produce, respectively:
     \begin{verbatim}
-      (list)
-      (list 2 3)
-      (list 1 2 3 4)
-      (list 1 2 3 4 5 6 7 8)
-    \end{verbatim}
+(list)
+(list 2 3)
+(list 1 2 3 4)
+(list 1 2 3 4 5 6 7 8) \end{verbatim}
     You may not use any built-in or library functions other than
     \texttt{empty?}, \texttt{cons?}, \texttt{cons}, \texttt{first},
     and \texttt{rest}, or their near-synonyms \texttt{null?}, \texttt{pair?}, 
@@ -76,6 +104,7 @@
     copies a \texttt{cons} unnecessarily.
   \end{enumerate}
 
+\pagebreak[1]
 \item
   Prose and math in this course will be done in \LaTeX{}.  Write your solutions
   for this exercise in \LaTeX{}.  Put them in a file named \texttt{solution.tex}
