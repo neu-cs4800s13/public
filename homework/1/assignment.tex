@@ -1,0 +1,115 @@
+\documentclass{article}
+
+\title{Homework 1}
+\author{Here, Your N.}
+\date{Due \textbf{Wed., Jan. 16} at \textbf{9:00pm}.}
+
+\usepackage{url}
+\usepackage{hyperref}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+
+\item
+  You need to sign up for a Github account in order to submit homework in this
+  class.
+  \begin{enumerate}
+  \item
+    Make an account on \url{github.com}.
+  \item
+    Send an email to the instructor at \url{cce@ccs.neu.edu} with the subject
+    ``CS4800 Github Account''.  The body of the email must contain your name and
+    your Github account name.  You will receive a response within 24 hours with
+    the URL to a private Github account for your work in this course.
+  \item
+    Your private repository will start with only some of the files you need for
+    this assignment.  The public repository at
+    \url{github.com/neu-cs4800s13/public} has the files you need.  Use
+    \texttt{git merge}, \texttt{git rebase}, or some similar tool to import the
+    revision history from the public repository into your private repository.
+    You will \emph{not} get full credit for just uploading new copies of each
+    file into your repository.
+  \item
+    Complete the other problems as instructed in your private repository.
+    Whatever you submit to your private repository via \texttt{git push} by the
+    due date will be graded.
+  \end{enumerate}
+
+\item
+  Programming in this course will be done in Racket, and will use additional
+  Racket libraries provided for the course.  Write your solutions for this
+  exercise in Racket.  Put them in a file named \texttt{solution.rkt} in the
+  same directory as this PDF.
+  \begin{enumerate}
+  \item
+    Import the course software for your solution.
+  \item
+    Write a function \texttt{flatten-lists} to ``flatten'' a nested list
+    structure into a single list.  For example, the following expressions:
+    \begin{verbatim}
+      (flatten-lists (list))
+      (flatten-lists (list 2 3))
+      (flatten-lists (list 1 (list 2 3) 4))
+      (flatten-lists (list (list 1 (list 2 3) 4) (list 5 (list 6 7) 8)))
+    \end{verbatim}
+    \dots should produce, respectively:
+    \begin{verbatim}
+      (list)
+      (list 2 3)
+      (list 1 2 3 4)
+      (list 1 2 3 4 5 6 7 8)
+    \end{verbatim}
+    You may not use any built-in or library functions other than
+    \texttt{empty?}, \texttt{cons?}, \texttt{cons}, \texttt{first},
+    and \texttt{rest}, or their near-synonyms \texttt{null?}, \texttt{pair?}, 
+    \texttt{car}, and \texttt{cdr} (note that \texttt{cons} is always
+    \texttt{cons}).
+  \item
+    For full credit, \texttt{flatten-lists} must run in \(O(n)\) time, where
+    \(n\) is the combined length of the lists in its input.
+  \item
+    For extra credit, write \texttt{flatten-lists} so that every \texttt{cons}
+    it creates is part of its final output.  In other words, make sure it never
+    copies a \texttt{cons} unnecessarily.
+  \end{enumerate}
+
+\item
+  Prose and math in this course will be done in \LaTeX{}.  Write your solutions
+  for this exercise in \LaTeX{}.  Put them in a file named \texttt{solution.tex}
+  in the same directory as this PDF.  Also submit a rendered PDF of your
+  solution named \texttt{solution.pdf} in the same directory as this PDF.
+
+  \begin{enumerate}
+
+  \item Demonstrate that
+    \(f(n) = 2n^2 - 3n + 4 \in O(n^2)\).
+    That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
+    Then, show that for any possible \(n > n_0\), it must be true that
+    \(f(n) \leq c n^2\).
+
+  \item Demonstrate that
+    \(f(n) = 3 \sqrt{n} \in O(n)\).
+    That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
+    Then, show that for any possible \(n > n_0\), it must be true that
+    \(f(n) \leq c n\).
+
+  \item Demonstrate that
+    \(f(n) = \Sigma_{i=1}^{n} (2i^2+3i+5) \in O(n^3)\).
+    That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
+    Then, show that for any possible \(n > n_0\), it must be true that
+    \(f(n) \leq c n^3\).
+
+  \item Demonstrate that
+    \(f(n) = \sqrt{n} \not\in O(\log_2 n)\).
+    That is, for any possible \(c>0\) and for any possible \(n_0 > 0\), give a
+    formula for some \(n > n_0\) and show that \(n\) always satisfies
+    \(f(n) > c \log_2 n\).
+
+  \end{enumerate}
+
+\end{enumerate}
+
+\end{document}
