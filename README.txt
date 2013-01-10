@@ -6,6 +6,6 @@
 
           ============================================================
 
-                 YOU MAY NOT CREATE A FORK OF THIS REPOSITORY.
+             YOU MAY NOT CREATE A FORK OF THE TEMPLATE REPOSITORY.
            A repository "fork" is a copy that is visible to everyone.
            You must work in the private repository provided for you.
