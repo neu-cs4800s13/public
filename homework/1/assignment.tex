@@ -107,12 +107,18 @@
     \texttt{cons}).
   \item
     For full credit, \texttt{flatten-lists} must run in \(O(n)\) time, where
-    \(n\) is the combined length of the lists in its input.  Use
-    \texttt{define/cost} to define \texttt{flatten-lists} and any helper
+    \(n\) is the combined length of the lists in its input.
+
+    Use \texttt{define/cost} to define \texttt{flatten-lists} and any helper
     functions.  Define a \texttt{cost-model} for the built-in functions that you
     use.  Use the function \texttt{O?} we defined in
     \texttt{lectures/lecture-2013-01-10.rkt} to demonstrate that
     \texttt{flatten-lists} runs in \(O(n)\) time.
+
+    \textbf{Note:} The \texttt{O?} function cannot guarantee that your function
+    runs in \(O(n)\) time.  Getting credit for using \texttt{O?} correctly does
+    not guarantee credit for writing \texttt{flatten-lists} correctly, and vice
+    versa.
   \item
     For extra credit, write \texttt{flatten-lists} so that every \texttt{cons}
     it creates is part of its final output.  In other words, make sure it never
