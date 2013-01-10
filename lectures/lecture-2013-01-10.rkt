@@ -46,7 +46,38 @@
 (define (best-case i) (build-list i identity))
 (define (worst-case i) (reverse (best-case i)))
 
-(for {[i (in-range 10)]}
+;; f(n) = cost of sorting in the worst case
+
+(define (f n)
+  (define xs (worst-case n))
+  (cost-of #:model default
+    (sort xs)))
+
+(define (g n) (* n n))
+
+(define (O? f g c n0)
+  (define k (random-number))
+  (printf "Running ~s trials.\n" k)
+  (for/and {[trial (in-range 1 k)]}
+    (let {[n (+ n0 (random-big-number))]}
+      (printf "Trying n=~s\n" n)
+      (<= (f n) (* c (g n))))))
+
+(define (random-number)
+  (+ 1 (random 10)))
+
+(define (random-big-number)
+  (expt 10 (random-number)))
+
+(O?
+  (lambda (n) (* n n))
+  (lambda (n) (* 2000 n))
+  1
+  1)
+
+#;(O? f g 18 1)
+
+#;(for {[i (in-range 10)]}
   (define n (expt 10 i))
   (define best (best-case n))
   (define worst (worst-case n))
@@ -64,3 +95,7 @@
   (printf "Worst alt.: ~a\n"
     (integer->comma-separated
       (cost-of #:model alternate (sort worst)))))
+
+;; Questions:
+
+;; - Is there an "intuitive" approach to solving big-O inequalities?
