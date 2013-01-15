@@ -138,3 +138,12 @@
   (cost-of #:model (cost-model #:if 1)
     (or #f #f 'c #f))
   3)
+
+(check-equal?
+  (cost-of #:model (cost-model #:set! 1)
+    (let {[x 1]}
+      (#%expression
+        (begin
+          (set! x 2)
+          x))))
+  1)

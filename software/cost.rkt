@@ -36,6 +36,7 @@
   (define (transform-expr/cost stx)
     (syntax-parse stx
       #:literal-sets {kernel-literals}
+
       [var:id
        (define/syntax-parse key
          (match (identifier-binding #'var)
@@ -43,15 +44,19 @@
            ['lexical #'#:var]
            [#false #'#:top]))
        #'(values (#%cost-record key 'key var) var)]
+
       [(#%expression ~! e:expr)
        #'(#%expression (#%expr/cost e))]
+
       [(quote ~! value)
        #'(let {[x 'value]}
            (values (#%cost-record #:const '#:const x) x))]
+
       [(if ~! Q:expr A:expr E:expr)
        #'(let-values {[{Q.cost Q.value} (#%expr/cost Q)]}
            (#%cost-add Q.cost (#%cost-record #:if '#:if Q.value)
              (if Q.value (#%expr/cost A) (#%expr/cost E))))]
+
       [(letrec-values ~! {[{lhs:id ...} rhs:expr] ...} body:expr ...+)
        (define/syntax-parse {rhs.cost ...}
          (generate-temporaries (attribute rhs)))
@@ -60,6 +65,7 @@
              rhs.cost ...
              (#%cost-record #:let '#:let (list lhs ...) ...)
              (#%body/cost body ...)))]
+
       [(let-values ~! {[{lhs:id ...} rhs:expr] ...} body:expr ...+)
        (define/syntax-parse {rhs.cost ...}
          (generate-temporaries (attribute rhs)))
@@ -68,6 +74,7 @@
              rhs.cost ...
              (#%cost-record #:let '#:let (list lhs ...) ...)
              (#%body/cost body ...)))]
+
       [(#%plain-app ~! fun:expr arg:expr ...)
        (define/syntax-parse {arg.cost ...}
          (generate-temporaries (attribute arg)))
@@ -89,6 +96,19 @@
                  (lambda results
                    (define cost (#%cost-record fun fun.value arg.value ...))
                    (apply values cost results))))))]
+
+      [(begin ~! e:expr ... e0:expr)
+       (define/syntax-parse {e.cost ...}
+         (generate-temporaries (attribute e)))
+       #'(let {[e.cost (#%cost-of (#%expr/cost e))] ...}
+           (#%cost-add e.cost ... (#%expr/cost e0)))]
+
+      [(set! ~! x:id e:expr)
+       #'(let-values {[{e.cost e.value} (#%expr/cost e)]}
+           (#%cost-add e.cost
+             (values (#%cost-record #:set! '#:set! x e.value)
+               (set! x e.value))))]
+
       [e (wrong-syntax #'e "cannot compute a cost for this expression")]))
 
   (define (transform-result/cost stx)
