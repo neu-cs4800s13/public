@@ -103,6 +103,16 @@
        #'(let {[e.cost (#%cost-of (#%expr/cost e))] ...}
            (#%cost-add e.cost ... (#%expr/cost e0)))]
 
+      [(begin0 ~! e0:expr e:expr ...)
+       (define/syntax-parse {e.cost ...}
+         (generate-temporaries (attribute e)))
+       #'(call-with-values
+           (lambda {} (#%expr/cost e0))
+           (lambda {e0.cost . e0.values}
+             (let {[e.cost (#%cost-of (#%expr/cost e))] ...}
+               (#%cost-add e.cost ...
+                 (apply values e0.cost e0.values)))))]
+
       [(set! ~! x:id e:expr)
        #'(let-values {[{e.cost e.value} (#%expr/cost e)]}
            (#%cost-add e.cost
