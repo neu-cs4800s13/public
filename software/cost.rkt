@@ -87,7 +87,7 @@
                  (lambda results
                    (define cost (#%cost-record fun fun.value arg.value ...))
                    (apply values cost results))))))]
-      [e (wrong-syntax #'e "unknown expression form")]))
+      [e (wrong-syntax #'e "cannot compute a cost for this expression")]))
 
   (define (transform-result/cost stx)
     (syntax-parse stx 
@@ -96,10 +96,22 @@
        #'(#%body/cost defn ... result)]
       [e #'(#%expr/cost e)]))
 
-  (define (transform-defn/cost stx)
+  (define (transform-defn/cost id-stx stx)
+    (define/syntax-parse cost id-stx)
     (syntax-parse stx
       #:literal-sets {kernel-literals}
-      [e (wrong-syntax #'e "unknown definition form")]))
+      [(begin ~! body:expr ...)
+       (define/syntax-parse [temp ...]
+         (generate-temporaries (attribute body)))
+       #'(begin (#%defn/cost temp body) ...
+           (define cost (cost-add temp ...)))]
+      [(define-values ~! {name:id ...} body:expr)
+       #'(define-values {cost name ...} (#%expr/cost body))]
+      [(define-syntaxes ~! {name:id ...} body:expr)
+       #'(begin
+           (define cost 0)
+           (define-syntaxes {name ...} body))]
+      [e #'(define cost (#%cost-of (#%expr/cost e)))]))
 
   (define (wrap-expr/cost src stx)
     #`(call-with-values
@@ -169,7 +181,7 @@
 (define-syntax #%defn/cost
   (syntax-parser
     [(_ cost:id defn:expr)
-     (transform-defn/cost
+     (transform-defn/cost #'cost
        (local-expand #'defn (syntax-local-context) #false))]))
 
 (define-syntax #%cost-add
