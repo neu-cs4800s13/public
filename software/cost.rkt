@@ -170,7 +170,7 @@
   (syntax-parser
     [(_ cost:id defn:expr)
      (transform-defn/cost
-       (local-expand #'result (syntax-local-context) #false))]))
+       (local-expand #'defn (syntax-local-context) #false))]))
 
 (define-syntax #%cost-add
   (syntax-parser
