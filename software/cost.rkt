@@ -43,6 +43,8 @@
            ['lexical #'#:var]
            [#false #'#:top]))
        #'(values (#%cost-record key 'key var) var)]
+      [(#%expression ~! e:expr)
+       #'(#%expression (#%expr/cost e))]
       [(quote ~! value)
        #'(let {[x 'value]}
            (values (#%cost-record #:const '#:const x) x))]
