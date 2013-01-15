@@ -112,3 +112,14 @@
 (check-equal? fancy-cost1 16)
 (check-equal? fancy-cost2 28)
 (check-equal? fancy-cost3 41)
+
+(define/cost (mirror x)
+  (cond
+    [(pair? x)
+     (define x1 (car x))
+     (define x2 (cdr x))
+     (define y1 (mirror x1))
+     (define y2 (mirror x2))
+     (define y (cons y1 y2))
+     y]
+    [else x]))
