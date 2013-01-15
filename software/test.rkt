@@ -128,3 +128,13 @@
   (cost-of #:model (cost-model pair? 1 cons 1 car 1 cdr 1)
     (mirror (cons 1 2)))
   7)
+
+(check-equal?
+  (cost-of #:model (cost-model #:if 1)
+    (and 'a 'b #f 'd))
+  3)
+
+(check-equal?
+  (cost-of #:model (cost-model #:if 1)
+    (or #f #f 'c #f))
+  3)
