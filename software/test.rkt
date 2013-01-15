@@ -123,3 +123,8 @@
      (define y (cons y1 y2))
      y]
     [else x]))
+
+(check-equal?
+  (cost-of #:model (cost-model pair? 1 cons 1 car 1 cdr 1)
+    (mirror (cons 1 2)))
+  7)
