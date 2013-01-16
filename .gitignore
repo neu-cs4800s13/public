@@ -3,6 +3,9 @@
 *.zo
 *.dep
 
+# DrRacket generated files
+*.bak
+
 # LaTeX generated files
 *.aux
 *.log
