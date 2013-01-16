@@ -4,6 +4,7 @@
 
 (current-print pretty-print-handler)
 
+#;
 (define (faster-sort stuff)
   (define N (length stuff))
   (cond
