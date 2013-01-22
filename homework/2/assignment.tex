@@ -1,0 +1,124 @@
+\documentclass{article}
+
+\title{Homework 1}
+\author{Carl Eastlund}
+\date{Due \textbf{Wed., Jan. 30} at \textbf{9:00pm}.}
+
+%% Fonts
+\usepackage{newcent}
+\usepackage{fouriernc}
+\renewcommand{\ttdefault}{cmtt}
+
+%% Margins
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+
+%% URL formatting and PDF hyperlinks
+\usepackage{url}
+\usepackage{hyperref}
+
+\begin{document}
+
+\maketitle
+
+\newcommand\link[2][http://]{\href{#1#2}{\nolinkurl{#2}}}
+\newcommand\http[1]{\link[http://]{#1}}
+\newcommand\https[1]{\link[https://]{#1}}
+\newcommand\email[1]{\link[mailto:]{#1}}
+
+\begin{quotation}
+
+  \noindent \textbf{Collaboration Policy:} Your work on this assignment must be
+  your own.  You \emph{may not} copy files from other students in this class,
+  from people outside of the class, from the internet, or from any other source.
+  You \emph{may not} share files with other students in this class.
+
+  \medskip
+
+  \noindent You \emph{may} discuss the problems, concepts, and general
+  techniques used in this assignment with other students, so long as you do not
+  share actual solutions.
+
+  \medskip
+
+  \noindent If you are in doubt about what you \emph{may} and \emph{may not} do,
+  ask the course instructor before proceeding.  If you violate the collaboration
+  policy, you will receive a zero as your grade for this entire assignment and
+  you will be reported to OSCCR (\link{northeastern.edu/osccr}).
+
+\end{quotation}
+
+\begin{enumerate}
+
+  \pagebreak[1]
+\item
+  A \emph{selection} algorithm chooses the \(k\)th-from-smallest element in a
+  list.  For instance, \(\mathsf{select}(0,[20,10,50])=10\) because 10 is the
+  smallest element; \(\mathsf{select}(1,[20,10,50])=20\) because 20 is one from
+  the smallest element; and \(\mathsf{select}(2,[20,10,50])=40\) because 50 is
+  two from the smallest element.  The \emph{quickselect} algorithm performs
+  selection using a method similar to quicksort.
+  \begin{enumerate}
+  \item
+    Implement quickselect in Racket.  Given a list \(\ell\) of length \(n\) and
+    an index \(k\) such that \(0 \leq k < n\), quickselect performs the
+    following steps:
+    \begin{enumerate}
+    \item
+      First, select a pivot element \(p\); for our purposes, use the first
+      element of the list.
+    \item
+      Second, split the list into two partitions: \(\ell_1\), containing all
+      elements less than \(p\), and \(\ell_2\), containing all elements greater
+      than \(p\).
+    \item
+      Third, compute the lengths \(n_1\) and \(n_2\) of \(\ell_1\) and
+      \(\ell_2\), respectively.
+    \item
+      Fourth, if \(k < n_1\), then the \(k\)th-from-smallest element of \(\ell\)
+      is the \(k\)th-from-smallest element of \(\ell_1\).  Recursively compute
+      and return that value.
+    \item
+      Fifth, if \(k \geq n - n_2\), then the \(k\)th-from-smallest element of
+      \(\ell\) is the \((k - [n - n_2])\)th-from-smallest element of \(\ell_2\).
+      Recursively compute and return that value.
+    \item
+      Otherwise, the \(k\)th-from-smallest element of \(\ell\) is \(p\) itself.
+      Return \(p\).
+    \end{enumerate}
+  \item
+    Like quicksort, quickselect has worst-case performance when the pivot is
+    consistently chosen poorly: one partition has \(n-1\) elements, and the
+    desired index is in that partition.
+    \begin{enumerate}
+    \item State the worst-case running time of quickselect as a recurrence.
+    \item Solve the recurrence using the master method, recursion trees, or
+      summations.
+    \end{enumerate}
+  \item
+    Again like quicksort, quickselect has best-case performance when the pivot
+    is consistently chosen well: both partitions have \(\lfloor{n/2}\rfloor\)
+    elements.
+    \begin{enumerate}
+    \item State the best-case running time of quickselect as a recurrence.
+    \item Solve the recurrence using the master method, recursion trees, or
+      summations.
+    \end{enumerate}
+  \end{enumerate}
+
+  \pagebreak[1]
+\item
+  The \emph{stooge sort} algorithm is named for the Three Stooges comedy bit
+  where each member hits the other two.  Given a list of length three or more,
+  the algorithm splits the list into thirds.  The stooge sort algorithm proceeds
+  by sorting the first two thirds, then the last two thirds, and finally the
+  first two thirds again.
+  \begin{enumerate}
+  \item Implement stooge sort in Racket.
+  \item State the running time of stooge sort as a recurrence.
+  \item Solve the recurrence by the master method, or demonstrate that the
+    master method does not apply.
+  \end{enumerate}
+
+\end{enumerate}
+
+\end{document}
