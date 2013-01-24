@@ -53,7 +53,8 @@
       2n^2 - 3n + 4 &\leq& cn^2 \\
       2n^2 - 3n + 4n &\leq& cn^2
       & $because $ 4 \leq 4n $ if we choose $ n_0 \geq 1 \\
-      2n^2 + n &\leq& cn^2 \\
+      2n^2 + n &\leq& cn^2
+      & $by simplification$ \\
       2n^2 + n^2 &\leq& cn^2
       & $because $ n \leq n^2 $ given $ n_0 \geq 1 \\
       3n^2 &\leq& cn^2
@@ -88,6 +89,26 @@
     That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
     Then, show that for any possible \(n > n_0\), it must be true that
     \(f(n) \leq c n^3\).
+
+    \paragraph{Solution:} Solving for \(c\) and \(n_0\) as we go.
+    \[
+    \begin{array}{rcll}
+      \Sigma_{i=1}^{n} (2i^2+3i+5) &\leq& cn^3 \smallskip \\
+      2(\Sigma_{i=1}^{n} i^2) + 3(\Sigma_{i=1}^{n} i) + 5 &\leq& cn^3
+      & $by linearity of $ \Sigma $ (see Appendix A in the text)$ \smallskip \\
+      2(\Sigma_{i=1}^{n} i^2) + 3(\frac{n^2+n}{2}) + 5 &\leq& cn^3
+      & $by arithmetic series (see Appendix A again)$ \smallskip \\
+      2(\frac{2n^3+3n^2+n}{6}) + 3(\frac{n^2+n}{2}) + 5 &\leq& cn^3
+      & $by sum of squares (see Appendix A yet again)$ \smallskip \\
+      \frac{2}{3}n^3 + \frac{5}{2}n^2 + \frac{11}{6}n &\leq& cn^3
+      & $by simplification$ \smallskip \\
+      \frac{2}{3}n^3 + \frac{5}{2}n^3 + \frac{11}{6}n^3 &\leq& cn^3
+      & $because $ n \leq n^2 \leq n^3 $ if we choose $ n_0 \geq 1 \smallskip \\
+      5n^3 &\leq& cn^3
+      & $by simplification; true if we choose $ c \geq 5
+    \end{array}
+    \]
+    Therefore, the equation holds for \(c=5\) and \(n_0=1\).
 
     \bigskip
 
