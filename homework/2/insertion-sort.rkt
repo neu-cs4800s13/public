@@ -1,10 +1,10 @@
 #lang racket
 
-(require rackunit)
+(require rackunit "../../software/cs4800.rkt" "../../software/big-o.rkt")
 
 ;; isort-list : (Listof Number) -> (Listof Number)
 ;; Produces a list containing the elements of xs in ascending order.
-(define (isort-list xs)
+(define/cost (isort-list xs)
   (cond
     [(empty? xs) empty]
     [else (insert-list (first xs)
@@ -13,7 +13,7 @@
 ;; insert-list : Number (Listof Number) -> (Listof Number)
 ;; Produces a list containing x inserted in the proper location among the
 ;; elements of xs, which must be in ascending order.
-(define (insert-list x xs)
+(define/cost (insert-list x xs)
   (cond
     [(empty? xs) (cons x empty)]
     [else
@@ -24,12 +24,12 @@
 
 ;; isort-vector : (Vectorof Number) -> Void
 ;; Rearranges the elements of xs in ascending order.
-(define (isort-vector xs)
+(define/cost (isort-vector xs)
   (isort-vector-from xs 0))
 
 ;; isort-vector-from : (Vectorof Number) Number -> Void
 ;; Rearranges the elements of xs starting at index i in ascending order.
-(define (isort-vector-from xs i)
+(define/cost (isort-vector-from xs i)
   (cond
     [(= i (vector-length xs)) (void)]
     [else
@@ -39,7 +39,7 @@
 ;; insert-vector-at : (Vectorof Number) Number -> Void
 ;; Inserts the element of xs at index i-1 into the proper location
 ;; among the elements starting at index i.
-(define (insert-vector-at xs i)
+(define/cost (insert-vector-at xs i)
   (cond
     [(= i (vector-length xs)) (void)]
     [else
@@ -64,6 +64,20 @@
 (check-equal? (isort-list (list 2 1 3)) (list 1 2 3))
 (check-equal? (isort-list (list 1 3 2)) (list 1 2 3))
 (check-equal? (isort-list (list 1 2 3)) (list 1 2 3))
+
+(define (cost-of-isort-list n)
+  (define xs (build-list n (lambda {i} (random-big-number))))
+  (cost-of #:model (cost-model
+                     <= 1
+                     cons 1
+                     first 1
+                     rest 1
+                     empty? 1)
+    (isort-list xs)))
+
+(check-equal?
+  (O? cost-of-isort-list (lambda {n} (* n n)) 10 1 random-number)
+  #true)
 
 ;; Tests for isort-vector:
 
@@ -106,3 +120,20 @@
 (define v123 (vector 1 2 3))
 (isort-vector v123)
 (check-equal? v123 (vector 1 2 3))
+
+(define (cost-of-isort-vector n)
+  (define xs (build-vector n (lambda {i} (random-big-number))))
+  (cost-of #:model (cost-model
+                     = 1
+                     <= 1
+                     void 1
+                     vector-length 1
+                     vector-ref 1
+                     vector-set! 1
+                     add1 1
+                     sub1 1)
+    (isort-vector xs)))
+
+(check-equal?
+  (O? cost-of-isort-vector (lambda {n} (* n n)) 10 1 random-number)
+  #true)
