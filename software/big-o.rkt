@@ -2,8 +2,6 @@
 
 (provide O? random-number random-small-number random-big-number)
 
-(require rackunit)
-
 ;; O? : (Number -> Number) (Number -> Number) Number Number
 ;; Optional fifth argument: (-> Number)
 ;; Checks if f(n) is in O(g(n)).
@@ -24,14 +22,17 @@
 (define (random-small-number)
   (random 10))
 
-(check-equal?
-  (O? (lambda (n) (expt n 2)) (lambda (n) (expt n 3)) 1 1)
-  #true)
+(module+ main
+  (require rackunit)
 
-(check-equal?
-  (O? (lambda (n) (expt n 3)) (lambda (n) (expt n 2)) 1 1)
-  #false)
+  (check-equal?
+    (O? (lambda (n) (expt n 2)) (lambda (n) (expt n 3)) 1 1)
+    #true)
 
-(check-equal?
-  (O? (lambda (n) (expt n 3)) (lambda (n) (expt n 2)) 1 1 random-small-number)
-  #false)
+  (check-equal?
+    (O? (lambda (n) (expt n 3)) (lambda (n) (expt n 2)) 1 1)
+    #false)
+
+  (check-equal?
+    (O? (lambda (n) (expt n 3)) (lambda (n) (expt n 2)) 1 1 random-small-number)
+    #false))
