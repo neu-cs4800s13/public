@@ -41,6 +41,7 @@
 
   \begin{enumerate}
 
+    \pagebreak[1]
   \item Demonstrate that
     \(f(n) = 2n^2 - 3n + 4 \in O(n^2)\).
     That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
@@ -65,6 +66,7 @@
 
     \bigskip
 
+    \pagebreak[1]
   \item Demonstrate that
     \(f(n) = 3 \sqrt{n} \in O(n)\).
     That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
@@ -84,6 +86,7 @@
 
     \bigskip
 
+    \pagebreak[1]
   \item Demonstrate that
     \(f(n) = \Sigma_{i=1}^{n} (2i^2+3i+5) \in O(n^3)\).
     That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
@@ -112,11 +115,29 @@
 
     \bigskip
 
+    \pagebreak[3]
   \item Demonstrate that
     \(f(n) = \sqrt{n} \not\in O(\log_2 n)\).
     That is, for any possible \(c>0\) and for any possible \(n_0 > 0\), give a
     formula for some \(n > n_0\) and show that \(n\) always satisfies
     \(f(n) > c \log_2 n\).
+
+    \paragraph{Solution:} Solving for \(n\) as we go.
+    \[
+    \begin{array}{rcll}
+      \sqrt{n} &>& c \log_2 n \\
+      \sqrt{n} &>& 4c \log_2 \sqrt[4]{n}
+      & $by properties of $ \log \\
+      \sqrt{n} &>& 4c \sqrt[4]{n}
+      & $because $  \sqrt[4]{n} > \log_2 \sqrt[4]{n}
+      $ if we choose $ \sqrt[4]{n} > 2 $, meaning $ n > 16 \\
+      \sqrt[4]{n} &>& 4c
+      & $divide by $ \sqrt[4]n \\
+      n &>& 256c
+      & $raise both sides to the power of 4$ \\
+    \end{array}
+    \]
+    Therefore, the equation holds for \(n=256c+n_0+16\).
 
   \end{enumerate}
 
