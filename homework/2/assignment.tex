@@ -12,6 +12,9 @@
 %% Margins
 \usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
 
+%% Math formatting
+\usepackage{nicefrac}
+
 %% URL formatting and PDF hyperlinks
 \usepackage{url}
 \usepackage{hyperref}
@@ -49,12 +52,12 @@
 
 \begin{enumerate}
 
-  \pagebreak[1]
+  \pagebreak[2]
 \item
   A \emph{selection} algorithm chooses the \(k\)th-from-smallest element in a
   list.  For instance, \(\mathsf{select}(0,[20,10,50])=10\) because 10 is the
   smallest element; \(\mathsf{select}(1,[20,10,50])=20\) because 20 is one from
-  the smallest element; and \(\mathsf{select}(2,[20,10,50])=40\) because 50 is
+  the smallest element; and \(\mathsf{select}(2,[20,10,50])=50\) because 50 is
   two from the smallest element.  The \emph{quickselect} algorithm performs
   selection using a method similar to quicksort.
   \begin{enumerate}
@@ -105,18 +108,62 @@
     \end{enumerate}
   \end{enumerate}
 
-  \pagebreak[1]
+  \pagebreak[2]
 \item
-  The \emph{stooge sort} algorithm is named for the Three Stooges comedy bit
-  where each member hits the other two.  Given a list of length three or more,
-  the algorithm splits the list into thirds.  The stooge sort algorithm proceeds
-  by sorting the first two thirds, then the last two thirds, and finally the
-  first two thirds again.
+  The \emph{stooge sort} algorithm is named for the Three Stooges comedy trio.
+  Given a list of length three or more, the algorithm splits the list into
+  thirds.  The algorithm proceeds by sorting the first two thirds, then the last
+  two thirds, and finally the first two thirds again.
   \begin{enumerate}
   \item Implement stooge sort in Racket.
   \item State the running time of stooge sort as a recurrence.
-  \item Solve the recurrence by the master method, or demonstrate that the
-    master method does not apply.
+  \item Solve the recurrence using the master method, recursion trees, or
+    summations.
+  \end{enumerate}
+
+  \pagebreak[2]
+\item
+  For each pair of functions \(f(n)\) and \(g(n)\) below, state whether
+  \mbox{\(f(n) \in O(g(n))\)}, \mbox{\(f(n) \in \Omega(g(n))\)}, or both.
+  Recall that you can prove \mbox{\(f(n) \not\in O(g(n))\)} by proving
+  \mbox{\(f(n) \in \omega(g(n))\)}.  Similarly, recall that you can prove
+  \mbox{\(f(n) \not\in \Omega(g(n))\)} by proving
+  \mbox{\(f(n) \in o(g(n))\)}.
+  \begin{enumerate}
+  \item \(f(n) = 5n^{1.25} + 3n\log n + 2 n\sqrt{n}\)
+    \begin{enumerate}
+    \item \(g(n) = n^2\)
+    \item \(g(n) = n^{\nicefrac{3}{2}}\)
+    \item \(g(n) = n\log n\)
+    \item \(g(n) = n\)
+    \end{enumerate}
+  \item \(f(n) = n (\log \nicefrac{n}{2})^2\)
+    \begin{enumerate}
+    \item \(g(n) = n\)
+    \item \(g(n) = n \sqrt{n}\)
+    \item \(g(n) = n (\log n)^2\)
+    \item \(g(n) = n \log n\)
+    \end{enumerate}
+  \item \(f(n) = 2^2n\)
+    \begin{enumerate}
+      \item \(g(n) = n^{65,536}\)
+      \item \(g(n) = 2^n\)
+      \item \(g(n) = 3^n\)
+      \item \(g(n) = 4^n\)
+      \item \(g(n) = 5^n\)
+      \item \(g(n) = n!\)
+    \end{enumerate}
+  \end{enumerate}
+
+  \pagebreak[2]
+\item
+  Solve each recurrence below using the master method, or show that the
+  master method does not apply.
+  \begin{enumerate}
+  \item \(T(n) = 5T(\nicefrac{1}{4}n) + \nicefrac{5}{4}^n\)
+  \item \(T(n) = 9T(\nicefrac{1}{3}n) + n^2\sqrt{\log n}\)
+  \item \(T(n) = 2T(\nicefrac{1}{4}n) + \sqrt[3]{n}\)
+  \item \(T(n) = 2T(\nicefrac{2}{3}n) + (\log n)^2\)
   \end{enumerate}
 
 \end{enumerate}
