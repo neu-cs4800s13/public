@@ -50,6 +50,9 @@
 
 \end{quotation}
 
+Submit your solutions to the following exercises as LaTeX source in
+\texttt{solution.tex} and also as a rendered PDF in \texttt{solution.pdf}.
+
 \begin{enumerate}
 
   \pagebreak[2]
@@ -67,9 +70,9 @@
   the smallest element, and 50 is two from the smallest element.
   \begin{enumerate}
   \item
-    Implement quickselect in Racket.  Given an index \(k\) a list \(\ell\) of
-    length \(n\) and such that \(0 \leq k < n\), quickselect performs the
-    following steps:
+    Implement quickselect in Racket.  Submit your implementation in
+    \texttt{solution.rkt}.  Given an index \(k\) a list \(\ell\) of length \(n\)
+    and such that \(0 \leq k < n\), quickselect performs the following steps:
     \begin{enumerate}
     \item
       First, select a pivot element \(p\); for our purposes, use the first
@@ -104,7 +107,7 @@
     \end{enumerate}
   \item
     Again like quicksort, quickselect has best-case performance when the pivot
-    is consistently chosen well: both partitions have \(\lfloor{n/2}\rfloor\)
+    is consistently chosen well: both partitions have at most \(\frac{n}{2}\)
     elements.
     \begin{enumerate}
     \item State the best-case running time of quickselect as a recurrence.
@@ -126,8 +129,11 @@
     \texttt{xs}, \mbox{\texttt{(stooge-sort~xs)}} must rearrange the elements of
     \texttt{xs} in sorted order and return \texttt{(void)}.  See the
     implementation of \texttt{isort-vector} in \texttt{insertion-sort.rkt} for
-    an example of programming with vectors and mutation in Racket.  Submit your
-    implementation of stooge sort in \texttt{solution.rkt}.
+    an example of programming with vectors and mutation in Racket.  Notice that
+    \texttt{isort-vector} is an \emph{in-place} sorting algorithm, meaning it
+    rearranges the elements of a vector without creating any new vectors.  For
+    full credit, your implementation of stooge sort should also be in-place.
+    Submit your implementation of stooge sort in \texttt{solution.rkt}.
   \item State the running time of stooge sort as a recurrence.
   \item Solve the recurrence using the master method, recursion trees, or
     summations.
@@ -139,8 +145,7 @@
   \mbox{\(f(n) \in O(g(n))\)}, \mbox{\(f(n) \in \Omega(g(n))\)}, or both.
   Recall that you can prove \mbox{\(f(n) \not\in O(g(n))\)} by proving
   \mbox{\(f(n) \in \omega(g(n))\)}.  Similarly, recall that you can prove
-  \mbox{\(f(n) \not\in \Omega(g(n))\)} by proving
-  \mbox{\(f(n) \in o(g(n))\)}.
+  \mbox{\(f(n) \not\in \Omega(g(n))\)} by proving \mbox{\(f(n) \in o(g(n))\)}.
   \begin{enumerate}
   \item \(f(n) = 5n^{1.25} + 3n\log n + 2 n\sqrt{n}\)
     \begin{enumerate}
@@ -149,16 +154,16 @@
     \item \(g(n) = n\log n\)
     \item \(g(n) = n\)
     \end{enumerate}
-  \item \(f(n) = n (\log \nicefrac{n}{2})^2\)
+  \item \(f(n) = n (\log \frac{n}{2})^2\)
     \begin{enumerate}
     \item \(g(n) = n\)
     \item \(g(n) = n \sqrt{n}\)
     \item \(g(n) = n (\log n)^2\)
     \item \(g(n) = n \log n\)
     \end{enumerate}
-  \item \(f(n) = 2^2n\)
+  \item \(f(n) = 2^{2n}\)
     \begin{enumerate}
-      \item \(g(n) = n^{65,536}\)
+      \item \(g(n) = n^{65536}\)
       \item \(g(n) = 2^n\)
       \item \(g(n) = 3^n\)
       \item \(g(n) = 4^n\)
@@ -172,10 +177,10 @@
   Solve each recurrence below using the master method, or show that the
   master method does not apply.
   \begin{enumerate}
-  \item \(T(n) = 5T(\nicefrac{1}{4}n) + \nicefrac{5}{4}^n\)
-  \item \(T(n) = 9T(\nicefrac{1}{3}n) + n^2\sqrt{\log n}\)
-  \item \(T(n) = 2T(\nicefrac{1}{4}n) + \sqrt[3]{n}\)
-  \item \(T(n) = 2T(\nicefrac{2}{3}n) + (\log n)^2\)
+  \item \(T(n) = 5T(\frac{1}{4}n) + (\frac{5}{4})^n\)
+  \item \(T(n) = 9T(\frac{1}{3}n) + n^2\sqrt{\log n}\)
+  \item \(T(n) = 2T(\frac{1}{4}n) + \sqrt[3]{n}\)
+  \item \(T(n) = 2T(\frac{2}{3}n) + (\log n)^2\)
   \end{enumerate}
 
 \end{enumerate}
