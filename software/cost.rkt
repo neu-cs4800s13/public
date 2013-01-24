@@ -184,9 +184,12 @@
 (define-syntax lambda/cost
   (syntax-parser
     [(_ args body:expr ...+)
-     #'(procedure/cost
-         (lambda args
-           (#%body/cost body ...)))]))
+     #`(procedure/cost
+         #,(syntax-property
+             #'(lambda args
+                 (#%body/cost body ...))
+             'inferred-name
+             (syntax-local-name)))]))
 
 (define-syntax #%expr/cost
   (syntax-parser
