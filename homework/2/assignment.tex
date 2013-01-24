@@ -54,16 +54,21 @@
 
   \pagebreak[2]
 \item
-  A \emph{selection} algorithm chooses the \(k\)th-from-smallest element in a
-  list.  For instance, \(\mathsf{select}(0,[20,10,50])=10\) because 10 is the
-  smallest element; \(\mathsf{select}(1,[20,10,50])=20\) because 20 is one from
-  the smallest element; and \(\mathsf{select}(2,[20,10,50])=50\) because 50 is
-  two from the smallest element.  The \emph{quickselect} algorithm performs
-  selection using a method similar to quicksort.
+  The \emph{quickselect} algorithm uses a method similar to quicksort to choose
+  the \(k\)th-from-smallest element in a list.  For instance, the following
+  calls to quickselect:
+\begin{verbatim}
+(quickselect 0 (list 20 10 50))
+(quickselect 1 (list 20 10 50))
+(quickselect 2 (list 20 10 50))
+\end{verbatim}
+  \dots produce 10, 20, and 50, respectively, because in
+  \mbox{\texttt{(list~20~10~50)}}, 10 is the smallest element, 20 is one from
+  the smallest element, and 50 is two from the smallest element.
   \begin{enumerate}
   \item
-    Implement quickselect in Racket.  Given a list \(\ell\) of length \(n\) and
-    an index \(k\) such that \(0 \leq k < n\), quickselect performs the
+    Implement quickselect in Racket.  Given an index \(k\) a list \(\ell\) of
+    length \(n\) and such that \(0 \leq k < n\), quickselect performs the
     following steps:
     \begin{enumerate}
     \item
@@ -113,11 +118,16 @@
   The \emph{stooge sort} algorithm is named for the Three Stooges comedy bit
   where each member hits the other two.  The algorithm first swaps the first and
   last elements if they are out of order---\emph{i.e.}, if the first is greater
-  than the last.  Given a list of length three or more, the algorithm then
-  splits the list into thirds.  The algorithm proceeds by sorting the first two
-  thirds, then the last two thirds, and finally the first two thirds again.
+  than the last.  Given a sequence of length three or more, the algorithm then
+  splits the sequence into thirds.  The algorithm proceeds by sorting the first
+  two thirds, then the last two thirds, and finally the first two thirds again.
   \begin{enumerate}
-  \item Implement stooge sort in Racket.
+  \item Implement stooge sort in Racket using vectors.  Given a vector
+    \texttt{xs}, \mbox{\texttt{(stooge-sort~xs)}} must rearrange the elements of
+    \texttt{xs} in sorted order and return \texttt{(void)}.  See the
+    implementation of \texttt{isort-vector} in \texttt{insertion-sort.rkt} for
+    an example of programming with vectors and mutation in Racket.  Submit your
+    implementation of stooge sort in \texttt{solution.rkt}.
   \item State the running time of stooge sort as a recurrence.
   \item Solve the recurrence using the master method, recursion trees, or
     summations.
