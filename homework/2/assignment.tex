@@ -110,10 +110,12 @@
 
   \pagebreak[2]
 \item
-  The \emph{stooge sort} algorithm is named for the Three Stooges comedy trio.
-  Given a list of length three or more, the algorithm splits the list into
-  thirds.  The algorithm proceeds by sorting the first two thirds, then the last
-  two thirds, and finally the first two thirds again.
+  The \emph{stooge sort} algorithm is named for the Three Stooges comedy bit
+  where each member hits the other two.  The algorithm first swaps the first and
+  last elements if they are out of order---\emph{i.e.}, if the first is greater
+  than the last.  Given a list of length three or more, the algorithm then
+  splits the list into thirds.  The algorithm proceeds by sorting the first two
+  thirds, then the last two thirds, and finally the first two thirds again.
   \begin{enumerate}
   \item Implement stooge sort in Racket.
   \item State the running time of stooge sort as a recurrence.
