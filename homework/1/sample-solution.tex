@@ -51,17 +51,18 @@
     \[
     \begin{array}{rcll}
       2n^2 - 3n + 4 &\leq& cn^2 \\
-      4 &\leq& (c-2)n^2 + 3n
-      & $by subtracting $ 2n^2 - 3n $ from both sides$ \\
-      4 &\leq& (c-2)n^2 + 3
-      & $because $ 3 < 3n $ if we choose $ 1 \leq n_0 < n \\
-      1 &\leq& (c-2)n^2
-      & $by subtracting $ 3 $ from both sides$ \\
-      1 &\leq& n^2
-      & $if we choose $ c = 3 \\
+      2n^2 - 3n + 4n &\leq& cn^2
+      & $because $ 4 \leq 4n $ if we choose $ n_0 \geq 1 \\
+      2n^2 + n &\leq& cn^2 \\
+      2n^2 + n^2 &\leq& cn^2
+      & $because $ n \leq n^2 $ given $ n_0 \geq 1 \\
+      3n^2 &\leq& cn^2
+      & $which is true if we choose $ c \geq 3
     \end{array}
     \]
     Therefore, the equation holds for \(c=3\) and \(n_0=1\).
+
+    \bigskip
 
   \item Demonstrate that
     \(f(n) = 3 \sqrt{n} \in O(n)\).
@@ -69,11 +70,26 @@
     Then, show that for any possible \(n > n_0\), it must be true that
     \(f(n) \leq c n\).
 
+    \paragraph{Solution:} Solving for \(c\) and \(n_0\) as we go.
+    \[
+    \begin{array}{rcll}
+      3 \sqrt{n} &\leq& cn \\
+      3n &\leq& cn
+      & $because $ \sqrt{n} \leq n $ if we choose $ n_0 \geq 1 \\
+      &&& $and this is true if we choose $ c \geq 3
+    \end{array}
+    \]
+    Therefore, the equation holds for \(c=3\) and \(n_0=1\).
+
+    \bigskip
+
   \item Demonstrate that
     \(f(n) = \Sigma_{i=1}^{n} (2i^2+3i+5) \in O(n^3)\).
     That is, choose a specific \(c>0\) and a specific \(n_0 > 0\).
     Then, show that for any possible \(n > n_0\), it must be true that
     \(f(n) \leq c n^3\).
+
+    \bigskip
 
   \item Demonstrate that
     \(f(n) = \sqrt{n} \not\in O(\log_2 n)\).
