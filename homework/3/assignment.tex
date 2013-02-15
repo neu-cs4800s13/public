@@ -52,9 +52,22 @@
 
 \bigskip
 
+\newcommand\code[1]{\mbox{\texttt{#1}}}
+\newcommand\hastype{\ensuremath{:~}}
+\newcommand\type[1]{\ensuremath{\mathit{#1}}}
+\newcommand\Bool{\type{Boolean}}
+\newcommand\Num{\type{Number}}
+\newcommand\Set{\type{Set}}
+
 \begin{enumerate}
 
-\item Set representation.
+\item Implement sets with the following operations:
+  \begin{list}{}
+    \item \ensuremath{\code{(empty-set)} \hastype \Set{}}
+    \item \ensuremath{\code{(in{\code{?}} \Num{} \Set)} \hastype \Bool}
+    \item \ensuremath{\code{(insert-into \Num{} \Set)} \hastype \Set}
+    \item \ensuremath{\code{(remove-from \Num{} \Set)} \hastype \Set}
+  \end{list}
 
 \item Associative map representation.
 
