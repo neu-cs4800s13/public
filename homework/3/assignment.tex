@@ -52,28 +52,50 @@
 
 \bigskip
 
-\newcommand\code[1]{\mbox{\texttt{#1}}}
-\newcommand\hastype{\ensuremath{:~}}
-\newcommand\type[1]{\ensuremath{\mathit{#1}}}
-\newcommand\Bool{\type{Boolean}}
-\newcommand\Num{\type{Number}}
-\newcommand\Set{\type{Set}}
+\newcommand\file\texttt
+\newcommand\code\texttt
+\newcommand\?{\mbox{\code{?}}}
+
+You will implement five new datatypes in this assignment.  Three are concrete
+datatypes; I will tell you what sort of representation to use, and you will
+implement that in Racket.  Two are abstract datatypes; I will only tell you what
+operations they need to support, and you must both design the representation and
+implement your design in Racket.
+
+For each datatype, you will be assigned a set of operations that the datatype
+must support, and an upper-bound on the running time of the operations.  In each
+case, you will be asked to describe your design and analyze its efficiency in
+\LaTeX{} (in \file{solution.tex} and \file{solution.pdf}) and implement it in
+Racket (in \file{solution.rkt}).
+
+For the concrete datatypes, the \emph{only} compound data structures you may use
+in Racket are lists, arrays, boxes, and \code{struct} definitions.  The
+\emph{only} built-in operations you may use on these data structures are those
+that run in \(\Theta(1)\) time, plus \code{make-vector}, which runs in
+\(\Theta(n)\) time.  You must implement all other operations yourself.  For
+reference, all the functions defined by \code{struct} are in \(\Theta(1)\), as
+are \code{empty\?}, \code{cons\?}, \code{cons}, \code{first}, \code{rest},
+\code{vector-length}, \code{vector-ref}, \code{vector-set!}, \code{box\?},
+\code{box}, and \code{unbox}.
+
+For the abstract datatypes, you may use lists, arrays, boxes, and \code{struct}s
+as described above; you may also use any of the other datatypes you have
+implemented.
 
 \begin{enumerate}
 
-\item Implement sets with the following operations:
-  \begin{list}{}
-    \item \ensuremath{\code{(empty-set)} \hastype \Set{}}
-    \item \ensuremath{\code{(in{\code{?}} \Num{} \Set)} \hastype \Bool}
-    \item \ensuremath{\code{(insert-into \Num{} \Set)} \hastype \Set}
-    \item \ensuremath{\code{(remove-from \Num{} \Set)} \hastype \Set}
-  \end{list}
+\item Concrete datatypes:
+  \begin{enumerate}
+  \item Doubly-linked lists.
+  \item Balanced binary trees.
+  \item Hash tables.
+  \end{enumerate}
 
-\item Associative map representation.
-
-\item Copyable, extensible sequence representation.
-
-\item Catenable deque representation.
+\item Abstract datatypes:
+  \begin{enumerate}
+  \item Sets.
+  \item Catenable deques.
+  \end{enumerate}
 
 \end{enumerate}
 
