@@ -122,7 +122,7 @@ large, but we can consider only ``small'' numbers and strings for our purposes.)
     Removes any existing association for \Key{}, returning the resulting
     \Assoc{}.  Your implementation may construct a new \Assoc{} for the result,
     or mutate and return the original \Assoc{}.
-  \item \(\code{(lookup \Key{} \Assoc{})} \isty (\Val{} \U \code{\#false})\)
+  \item \(\code{(lookup \Key{} \Assoc{})} \isty (\Val{} \U \code{\#false})\) \\
     Looks for an association for \Key{}.  If one exists, returns the
     corresponding \Val{}.  Otherwise, returns \code{\#false}.
   \end{list}
@@ -154,10 +154,18 @@ large, but we can consider only ``small'' numbers and strings for our purposes.)
 \item Implement sets.  In most representations, the \code{without} operation
   will be the most subtle, so bear it in mind during the design phase.
   \begin{list}{}
-  \item \(\code{(empty-set)} \isty \Set{}\)
-  \item \(\code{(in? \Elem{} \Set{})} \isty \Bool{}\)
-  \item \(\code{(extend \Elem{} \Set{})} \isty \Set{}\)
-  \item \(\code{(without \Elem{} \Elem{} \Set{})} \isty \Set{}\)
+  \item \(\code{(empty-set)} \isty \Set{}\) \\
+    Creates a set containing no elements.
+  \item \(\code{(in? \Elem{} \Set{})} \isty \Bool{}\) \\
+    Produces \code{\#true} if the given \Set{} contains the given \Elem{};
+    produces \code{\#false} otherwise.
+  \item \(\code{(extend \Elem{} \Set{})} \isty \Set{}\) \\
+    Produces a new set containing the given \Elem{} plus everything in the given
+    \Set{}.  Your implementation may construct a new \Set{}, or mutate and
+    return the given \Set{}.
+  \item \(\code{(without \Elem{} \Elem{} \Set{})} \isty \Set{}\) \\
+    Produces a new set containing everything in the given \Set{} except for
+    elements between the two given \Elem{}s, inclusive.
   \end{list}
 
 \item Implement double-ended queues.  In most representations, the
