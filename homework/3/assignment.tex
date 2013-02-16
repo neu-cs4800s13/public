@@ -196,16 +196,73 @@ large, but we can consider only ``small'' numbers and strings for our purposes.)
   \code{concatenate} operation will be the most subtle, so bear it in mind
   during the design phase.
   \begin{list}{}
-  \item \(\code{(new-queue)} \isty \Q{}\)
-  \item \(\code{(full\? \Q{})} \isty \Bool{}\)
-  \item \(\code{(add-leftmost \X{} \Q{})} \isty \Q{}\)
-  \item \(\code{(add-rightmost \X{} \Q{})} \isty \Q{}\)
-  \item \(\code{(get-leftmost \Q{})} \isty \X{}\)
-  \item \(\code{(get-rightmost \Q{})} \isty \X{}\)
-  \item \(\code{(drop-leftmost \Q{})} \isty \Q{}\)
-  \item \(\code{(drop-rightmost \Q{})} \isty \Q{}\)
-  \item \(\code{(concatenate \Q{} \Q{})} \isty \Q{}\)
+  \item \(\code{(new-queue)} \isty \Q{}\) \\
+    Produces a new queue containing no values.
+  \item \(\code{(full\? \Q{})} \isty \Bool{}\) \\
+    Returns \code{\#true} if the given \Q{} contains at least one value.
+    Returns \code{\#false} otherwise.
+  \item \(\code{(add-leftmost \X{} \Q{})} \isty \Q{}\) \\
+    Adds the given \X{} to the left end of the \Q{}, returning the resulting
+    \Q{}.  Your implementation may construct a new \Q{}, or mutate and return
+    the given \Q{}.
+  \item \(\code{(get-leftmost \Q{})} \isty \X{}\) \\
+    Produces the leftmost value in the given \Q{}, which must be non-empty.
+  \item \(\code{(drop-leftmost \Q{})} \isty \Q{}\) \\
+    Removes the leftmost value in the given \Q{}, which must be non-empty.
+    Your implementation may construct a new \Q{}, or mutate and return the given
+    \Q{}.
+  \item \(\code{(add-rightmost \X{} \Q{})} \isty \Q{}\) \\
+    Adds the given \X{} to the right end of the \Q{}, returning the resulting
+    \Q{}.  Your implementation may construct a new \Q{}, or mutate and return
+    the given \Q{}.
+  \item \(\code{(get-rightmost \Q{})} \isty \X{}\) \\
+    Produces the rightmost value in the given \Q{}, which must be non-empty.
+  \item \(\code{(drop-rightmost \Q{})} \isty \Q{}\) \\
+    Removes the rightmost value in the given \Q{}, which must be non-empty.
+    Your implementation may construct a new \Q{}, or mutate and return the given
+    \Q{}.
+  \item \(\code{(concatenate \Q{} \Q{})} \isty \Q{}\) \\
+    Produces a \Q{} containing the values contained by both given \Q{}s.
+    The values from the first argument must go on the left, and
+    the values from the second argument must go on the right.
+    Your implementation may construct a new \Q{}, or it may mutate one or both
+    of the given \Q{}s and then return either of them.
   \end{list}
+  \begin{enumerate}
+  \item What is your data definition for \Q{}?  Include all invariants
+    necessary to achieve your asymptotic running time and space usage.
+  \item Analyze the space used by your representation:
+    \begin{enumerate}
+    \item Argue that any \Q{} matching your data definition that contains
+      \(n\) values uses at most \(O(n)\) space.
+    \item Argue that \code{new-queue} produces a valid \Q{}.
+    \item Argue that \code{add-leftmost} produces a valid \Q{}.
+    \item Argue that \code{drop-leftmost} produces a valid \Q{}.
+    \item Argue that \code{add-rightmost} produces a valid \Q{}.
+    \item Argue that \code{drop-rightmost} produces a valid \Q{}.
+    \item Argue that \code{concatenate} produces a valid \Q{}.
+    \end{enumerate}
+  \item Analyze the running time for each operation:
+    \begin{enumerate}
+    \item State whether your analysis is worst case, average case, or
+      amortized.
+    \item Argue that \code{new-queue} takes \(O(1)\) time.
+    \item Argue that \code{add-leftmost} takes \(O(\log n)\) time for an
+      input that contains \(n\) values.
+    \item Argue that \code{get-leftmost} takes \(O(\log n)\) time for an
+      input that contains \(n\) values.
+    \item Argue that \code{drop-leftmost} takes \(O(\log n)\) time for an
+      input that contains \(n\) values.
+    \item Argue that \code{add-rightmost} takes \(O(\log n)\) time for an
+      input that contains \(n\) values.
+    \item Argue that \code{get-rightmost} takes \(O(\log n)\) time for an
+      input that contains \(n\) values.
+    \item Argue that \code{drop-rightmost} takes \(O(\log n)\) time for an
+      input that contains \(n\) values.
+    \item Argue that \code{concatenate} takes \(O(\log n + \log m)\) time for
+      inputs that contain \(n\) values and \(m\) values, respectively.
+    \end{enumerate}
+  \end{enumerate}
 
 \end{enumerate}
 
