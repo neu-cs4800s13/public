@@ -167,6 +167,30 @@ large, but we can consider only ``small'' numbers and strings for our purposes.)
     Produces a new set containing everything in the given \Set{} except for
     elements between the two given \Elem{}s, inclusive.
   \end{list}
+  \begin{enumerate}
+  \item What is your data definition for \Set{}?  Include all invariants
+    necessary to achieve your asymptotic running time and space usage.
+  \item Analyze the space used by your representation:
+    \begin{enumerate}
+    \item Argue that any \Set{} matching your data definition that contains
+      \(n\) elements uses at most \(O(n)\) space.
+    \item Argue that \code{empty-set} produces a valid \Set{}.
+    \item Argue that \code{extend} produces a valid \Set{}.
+    \item Argue that \code{without} produces a valid \Set{}.
+    \end{enumerate}
+  \item Analyze the running time for each operation:
+    \begin{enumerate}
+    \item State whether your analysis is worst case, average case, or
+      amortized.
+    \item Argue that \code{empty-set} takes \(O(1)\) time.
+    \item Argue that \code{in\?} takes \(O(\log n)\) time for an
+      input that contains \(n\) elements.
+    \item Argue that \code{extend} takes \(O(\log n)\) time for an
+      input that contains \(n\) elements.
+    \item Argue that \code{without} takes \(O(\log n)\) time for an
+      input that contains \(n\) elements.
+    \end{enumerate}
+  \end{enumerate}
 
 \item Implement double-ended queues.  In most representations, the
   \code{concatenate} operation will be the most subtle, so bear it in mind
