@@ -56,7 +56,7 @@
 \newcommand\code\texttt
 \newcommand\?{\mbox{\code{?}}}
 
-You will implement five new datatypes in this assignment.  Three are concrete
+You will implement three new datatypes in this assignment.  Three are concrete
 datatypes; I will tell you what sort of representation to use, and you will
 implement that in Racket.  Two are abstract datatypes; I will only tell you what
 operations they need to support, and you must both design the representation and
@@ -68,8 +68,8 @@ case, you will be asked to describe your design and analyze its efficiency in
 \LaTeX{} (in \file{solution.tex} and \file{solution.pdf}) and implement it in
 Racket (in \file{solution.rkt}).
 
-For the concrete datatypes, the \emph{only} compound data structures you may use
-in Racket are lists, arrays, boxes, and \code{struct} definitions.  The
+For implementing the datatypes, the \emph{only} compound data structures you may
+use in Racket are lists, arrays, boxes, and \code{struct} definitions.  The
 \emph{only} built-in operations you may use on these data structures are those
 that run in \(\Theta(1)\) time, plus \code{make-vector}, which runs in
 \(\Theta(n)\) time.  You must implement all other operations yourself.  For
@@ -78,24 +78,102 @@ are \code{empty\?}, \code{cons\?}, \code{cons}, \code{first}, \code{rest},
 \code{vector-length}, \code{vector-ref}, \code{vector-set!}, \code{box\?},
 \code{box}, and \code{unbox}.
 
-For the abstract datatypes, you may use lists, arrays, boxes, and \code{struct}s
-as described above; you may also use any of the other datatypes you have
-implemented.
+In each case, any sequence of \(n\) operations must run in \(O(n \log n)\) time
+in the average case.  You can accomplish this using worst-case bounds as with
+our ``D'' heaps, or with amortized bounds as in our ``growable sequences'', or
+with average-case bounds as in hash tables.
+
+In each case, a data structure containing \(n\) values must use at most
+\(\Theta(n)\) space.  Every \code{cons} cell, box, or \code{struct} takes up
+\(\Theta(1)\) space plus the space for its contents; every vector of length
+\(n\) takes up \(n\) space plus the space for its contents.  Numbers, strings,
+symbols, booleans, \code{empty} and \code{(void)} take up \(\Theta(1)\) space
+each, for our purposes.  (Technically, numbers and strings can be arbitrarily
+large, but we can consider only ``small'' numbers and strings for our purposes.)
+
+\newcommand\ty[1]{\ensuremath{\mathit{#1}}}
+\newcommand\isty{\ensuremath{~:~}}
+\newcommand\Num{\ty{Number}}
+\newcommand\Str{\ty{String}}
+\newcommand\Key{\Num}
+\newcommand\Val{\Str}
+\newcommand\Elem{\Num}
+\newcommand\Assoc{\ty{AssocMap}}
+\newcommand\Set{\ty{Set}}
+\newcommand\Q{\ty{Queue}}
+\newcommand\X{\Str}
+\newcommand\Bool{\ty{Boolean}}
+\newcommand\U{\mbox{ or }}
 
 \begin{enumerate}
 
-\item Concrete datatypes:
+\item Implement associative maps.  In most representations, the \code{unassign}
+  operation will be the most subtle, so bear it in mind during the design
+  phase.
+  \begin{list}{}
+  \item \(\code{(fresh-assoc)} \isty \Assoc{}\) \\
+    Creates a fresh associative map containing no associations.
+  \item \(\code{(assign \Key{} \Val{} \Assoc{})} \isty \Assoc{}\) \\
+    Adds an association that maps the given \Key{} to the given \Val{},
+    overwriting any existing mapping for \Key{},
+    returning the resulting \Assoc{}.  Your implementation may construct a new
+    \Assoc{} for the result, or mutate and return the original \Assoc{}.
+  \item \(\code{(unassign \Key{} \Assoc{})} \isty \Assoc\) \\
+    Removes any existing association for \Key{}, returning the resulting
+    \Assoc{}.  Your implementation may construct a new \Assoc{} for the result,
+    or mutate and return the original \Assoc{}.
+  \item \(\code{(lookup \Key{} \Assoc{})} \isty (\Val{} \U \code{\#false})\)
+    Looks for an association for \Key{}.  If one exists, returns the
+    corresponding \Val{}.  Otherwise, returns \code{\#false}.
+  \end{list}
   \begin{enumerate}
-  \item Doubly-linked lists.
-  \item Balanced binary trees.
-  \item Hash tables.
+  \item What is your data definition for \Assoc{}?  Include all invariants
+    necessary to achieve your asymptotic running time and space usage.
+  \item Analyze the space used by your representation:
+    \begin{enumerate}
+    \item Argue that any \Assoc{} matching your data definition that contains
+      \(n\) associations uses at most \(O(n)\) space.
+    \item Argue that \code{fresh-assoc} produces a valid \Assoc{}.
+    \item Argue that \code{assign} produces a valid \Assoc{}.
+    \item Argue that \code{unassign} produces a valid \Assoc{}.
+    \end{enumerate}
+  \item Analyze the running time for each operation:
+    \begin{enumerate}
+    \item State whether your analysis is worst case, average case, or
+      amortized.
+    \item Argue that \code{fresh-assoc} takes \(O(1)\) time.
+    \item Argue that \code{assign} takes \(O(\log n)\) time for an
+      input that contains \(n\) associations.
+    \item Argue that \code{unassign} takes \(O(\log n)\) time for an
+      input that contains \(n\) associations.
+    \item Argue that \code{lookup} takes \(O(\log n)\) time for an
+      input that contains \(n\) associations.
+    \end{enumerate}
   \end{enumerate}
 
-\item Abstract datatypes:
-  \begin{enumerate}
-  \item Sets.
-  \item Catenable deques.
-  \end{enumerate}
+\item Implement sets.  In most representations, the \code{without} operation
+  will be the most subtle, so bear it in mind during the design phase.
+  \begin{list}{}
+  \item \(\code{(empty-set)} \isty \Set{}\)
+  \item \(\code{(in? \Elem{} \Set{})} \isty \Bool{}\)
+  \item \(\code{(extend \Elem{} \Set{})} \isty \Set{}\)
+  \item \(\code{(without \Elem{} \Elem{} \Set{})} \isty \Set{}\)
+  \end{list}
+
+\item Implement double-ended queues.  In most representations, the
+  \code{concatenate} operation will be the most subtle, so bear it in mind
+  during the design phase.
+  \begin{list}{}
+  \item \(\code{(new-queue)} \isty \Q{}\)
+  \item \(\code{(full\? \Q{})} \isty \Bool{}\)
+  \item \(\code{(add-leftmost \X{} \Q{})} \isty \Q{}\)
+  \item \(\code{(add-rightmost \X{} \Q{})} \isty \Q{}\)
+  \item \(\code{(get-leftmost \Q{})} \isty \X{}\)
+  \item \(\code{(get-rightmost \Q{})} \isty \X{}\)
+  \item \(\code{(drop-leftmost \Q{})} \isty \Q{}\)
+  \item \(\code{(drop-rightmost \Q{})} \isty \Q{}\)
+  \item \(\code{(concatenate \Q{} \Q{})} \isty \Q{}\)
+  \end{list}
 
 \end{enumerate}
 
