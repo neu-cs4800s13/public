@@ -1,3 +1,4 @@
+#lang racket
 
 ;; A GS is (gs Array Number)
 (struct gs [contents start] #:mutable)
