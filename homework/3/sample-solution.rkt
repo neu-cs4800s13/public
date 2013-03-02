@@ -171,7 +171,42 @@
   (check-equal? (in? 3 (s126)) #false)
   (check-equal? (in? 4 (s126)) #false)
   (check-equal? (in? 5 (s126)) #false)
-  (check-equal? (in? 6 (s126)) #true))
+  (check-equal? (in? 6 (s126)) #true)
+
+  (test-begin
+    (for {[n (in-range 100)]}
+      (define n*1/5 (floor (* n 1/5)))
+      (define n*2/5 (floor (* n 2/5)))
+      (define n*3/5 (floor (* n 3/5)))
+      (define n*4/5 (floor (* n 4/5)))
+
+      (define big
+        (for/fold {[s (empty-set)]} {[i (in-range n)]}
+          (extend i s)))
+
+      (for {[i (in-range n)]}
+        (define msg (format "~a of ~a" i n))
+        (check-equal? (in? i big) #true msg))
+
+      (define small
+        (without n*1/5 n*4/5 big))
+
+      (for {[i (in-range n)]}
+        (define msg (format "~a of ~a" i n))
+        (cond
+          [(<= n*1/5 i n*4/5) (check-equal? (in? i small) #false msg)]
+          [else (check-equal? (in? i small) #true msg)]))
+
+      (define medium
+        (for/fold {[s small]} {[i (in-range n*2/5 (add1 n*3/5))]}
+          (extend i s)))
+
+      (for {[i (in-range n)]}
+        (define msg (format "~a of ~a" i n))
+        (cond
+          [(<= n*2/5 i n*3/5) (check-equal? (in? i medium) #true msg)]
+          [(<= n*1/5 i n*4/5) (check-equal? (in? i medium) #false msg)]
+          [else (check-equal? (in? i medium) #true msg)])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AVL Trees
@@ -524,4 +559,23 @@
   (check-equal? (get-leftmost (qc)) "c")
   (check-equal? (get-rightmost (qc)) "c")
   (check-equal? (full? (drop-rightmost (qc))) #false)
-  (check-equal? (full? (drop-leftmost (qc))) #false))
+  (check-equal? (full? (drop-leftmost (qc))) #false)
+
+  (test-begin
+    (for {[n (in-range 100)]}
+
+      (define q (new-queue))
+
+      (check-equal? (full? q) #false)
+
+      (for {[i (in-range 100)]}
+        (add-rightmost (number->string i) q)
+        (check-equal? (full? q) #true)
+        (check-equal? (get-rightmost q) (number->string i)))
+
+      (for {[i (in-range 100)]}
+        (check-equal? (full? q) #true)
+        (check-equal? (get-leftmost q) (number->string i))
+        (drop-leftmost q))
+
+      (check-equal? (full? q) #false))))
