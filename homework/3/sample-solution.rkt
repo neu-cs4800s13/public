@@ -80,7 +80,39 @@
   (define (a+1=uno) (unassign 2 (a+1=uno+2=two)))
   (check-not-exn a+1=uno)
   (check-equal? (lookup 1 (a+1=uno)) "uno")
-  (check-equal? (lookup 2 (a+1=uno)) #false))
+  (check-equal? (lookup 2 (a+1=uno)) #false)
+
+  (test-begin
+    (for {[n (in-range 100)]}
+
+      (define large
+        (for/fold {[a (fresh-assoc)]} {[i (in-range n)]}
+          (assign i (number->string i) a)))
+
+      (for {[i (in-range n)]}
+        (define msg (format "~a of ~a" i n))
+        (check-equal? (lookup i large) (number->string i) msg))
+
+      (define small
+        (for/fold {[a large]} {[i (in-range n)] #:when (odd? i)}
+          (unassign i a)))
+
+      (for {[i (in-range n)]}
+        (define msg (format "~a of ~a" i n))
+        (cond
+          [(odd? i) (check-equal? (lookup i small) #false msg)]
+          [else (check-equal? (lookup i small) (number->string i) msg)]))
+
+      (define medium
+        (for/fold {[a small]} {[i (in-range n)] #:when (integer? (sqrt i))}
+          (assign i "square" a)))
+
+      (for {[i (in-range n)]}
+        (define msg (format "~a of ~a" i n))
+        (cond
+          [(integer? (sqrt i)) (check-equal? (lookup i medium) "square" msg)]
+          [(odd? i) (check-equal? (lookup i medium) #false msg)]
+          [else (check-equal? (lookup i medium) (number->string i) msg)])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set
