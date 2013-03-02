@@ -82,6 +82,13 @@
   (check-equal? (lookup 1 (a+1=uno)) "uno")
   (check-equal? (lookup 2 (a+1=uno)) #false)
 
+  (define-check (check-assoc a k v msg)
+    (with-check-info {['assoc a] ['key k] ['expected v] ['message msg]}
+      (define actual (lookup k a))
+      (unless (equal? actual v)
+        (with-check-info {['actual actual]}
+          (fail-check)))))
+
   (test-begin
     (for {[n (in-range 100)]}
 
@@ -91,7 +98,7 @@
 
       (for {[i (in-range n)]}
         (define msg (format "~a of ~a" i n))
-        (check-equal? (lookup i large) (number->string i) msg))
+        (check-assoc large i (number->string i) msg))
 
       (define small
         (for/fold {[a large]} {[i (in-range n)] #:when (odd? i)}
@@ -100,8 +107,8 @@
       (for {[i (in-range n)]}
         (define msg (format "~a of ~a" i n))
         (cond
-          [(odd? i) (check-equal? (lookup i small) #false msg)]
-          [else (check-equal? (lookup i small) (number->string i) msg)]))
+          [(odd? i) (check-assoc small i #false msg)]
+          [else (check-assoc small i (number->string i) msg)]))
 
       (define medium
         (for/fold {[a small]} {[i (in-range n)] #:when (integer? (sqrt i))}
@@ -110,9 +117,9 @@
       (for {[i (in-range n)]}
         (define msg (format "~a of ~a" i n))
         (cond
-          [(integer? (sqrt i)) (check-equal? (lookup i medium) "square" msg)]
-          [(odd? i) (check-equal? (lookup i medium) #false msg)]
-          [else (check-equal? (lookup i medium) (number->string i) msg)])))))
+          [(integer? (sqrt i)) (check-assoc medium i "square" msg)]
+          [(odd? i) (check-assoc medium i #false msg)]
+          [else (check-assoc medium i (number->string i) msg)])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set
@@ -173,6 +180,13 @@
   (check-equal? (in? 5 (s126)) #false)
   (check-equal? (in? 6 (s126)) #true)
 
+  (define-check (check-set s n ? msg)
+    (with-check-info {['set s] ['elem n] ['expected ?] ['message msg]}
+      (define actual (in? n s))
+      (unless (equal? actual ?)
+        (with-check-info {['actual actual]}
+          (fail-check)))))
+
   (test-begin
     (for {[n (in-range 100)]}
       (define n*1/5 (floor (* n 1/5)))
@@ -186,7 +200,7 @@
 
       (for {[i (in-range n)]}
         (define msg (format "~a of ~a" i n))
-        (check-equal? (in? i big) #true msg))
+        (check-set big i #true msg))
 
       (define small
         (without n*1/5 n*4/5 big))
@@ -194,8 +208,8 @@
       (for {[i (in-range n)]}
         (define msg (format "~a of ~a" i n))
         (cond
-          [(<= n*1/5 i n*4/5) (check-equal? (in? i small) #false msg)]
-          [else (check-equal? (in? i small) #true msg)]))
+          [(<= n*1/5 i n*4/5) (check-set small i #false msg)]
+          [else (check-set small i #true msg)]))
 
       (define medium
         (for/fold {[s small]} {[i (in-range n*2/5 (add1 n*3/5))]}
@@ -204,9 +218,9 @@
       (for {[i (in-range n)]}
         (define msg (format "~a of ~a" i n))
         (cond
-          [(<= n*2/5 i n*3/5) (check-equal? (in? i medium) #true msg)]
-          [(<= n*1/5 i n*4/5) (check-equal? (in? i medium) #false msg)]
-          [else (check-equal? (in? i medium) #true msg)])))))
+          [(<= n*2/5 i n*3/5) (check-set medium i #true msg)]
+          [(<= n*1/5 i n*4/5) (check-set medium i #false msg)]
+          [else (check-set medium i #true msg)])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AVL Trees
