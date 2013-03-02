@@ -1,4 +1,5 @@
 #lang racket
+(require no-debug)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Test Setup
@@ -46,10 +47,10 @@
 (define (fresh-assoc)
   (empty-avl-tree))
 
-(define (assign key val assoc-map)
+(define/debug (assign key val assoc-map)
   (avl-tree-insert key val assoc-map))
 
-(define (unassign key assoc-map)
+(define/debug (unassign key assoc-map)
   (avl-tree-delete-range key key assoc-map))
 
 (define (lookup key assoc-map)
@@ -249,7 +250,7 @@
        [(> k key) (avl-tree-search k (node-right t))]
        [(= k key) (node-value t)])]))
 
-(define (avl-tree-insert k v t)
+(define/debug (avl-tree-insert k v t)
   (cond
     [(empty? t) (make-node k v empty empty)]
     [(node? t)
@@ -268,12 +269,12 @@
           (node-left t)
           (node-right t))])]))
 
-(define (avl-tree-delete-range k1 k2 t)
+(define/debug (avl-tree-delete-range k1 k2 t)
   (avl-tree-append
     (avl-tree-filter< k1 t)
     (avl-tree-filter> k2 t)))
 
-(define (avl-tree-filter< k t)
+(define/debug (avl-tree-filter< k t)
   (cond
     [(empty? t) empty]
     [(node? t)
@@ -286,7 +287,7 @@
         (define r (node-right t))
         (avl-tree-filter</append k r key v l)])]))
 
-(define (avl-tree-filter</append k t left-k left-v left-t)
+(define/debug (avl-tree-filter</append k t left-k left-v left-t)
   (cond
     [(<< (height t) (height left-t))
      (balance-node (node-key left-t) (node-value left-t)
@@ -306,7 +307,7 @@
           left-t
           (avl-tree-filter</append k r key v l))])]))
 
-(define (avl-tree-filter> k t)
+(define/debug (avl-tree-filter> k t)
   (cond
     [(empty? t) empty]
     [(node? t)
@@ -319,7 +320,7 @@
         (define r (node-right t))
         (avl-tree-filter>/append k l key v r)])]))
 
-(define (avl-tree-filter>/append k t right-k right-v right-t)
+(define/debug (avl-tree-filter>/append k t right-k right-v right-t)
   (cond
     [(<< (height t) (height right-t))
      (balance-node (node-key right-t) (node-value right-t)
@@ -330,7 +331,7 @@
      (define key (node-key t))
      (cond
        [(>= k key)
-        (avl-tree-filter>/append k (node-left t) right-k right-v right-t)]
+        (avl-tree-filter>/append k (node-right t) right-k right-v right-t)]
        [(< k key)
         (define l (node-left t))
         (define v (node-value t))
@@ -339,7 +340,7 @@
           (avl-tree-filter>/append k l key v r)
           right-t)])]))
 
-(define (avl-tree-append t1 t2)
+(define/debug (avl-tree-append t1 t2)
   (cond
     [(empty? t1) t2]
     [(empty? t2) t1]
