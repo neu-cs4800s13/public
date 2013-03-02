@@ -55,6 +55,33 @@
 (define (lookup key assoc-map)
   (avl-tree-search key assoc-map))
 
+(module+ test
+
+  (define (a) (fresh-assoc))
+  (check-not-exn a)
+  (check-equal? (lookup 1 (a)) #false)
+  (check-equal? (lookup 2 (a)) #false)
+
+  (define (a+1=one) (assign 1 "one" (a)))
+  (check-not-exn a+1=one)
+  (check-equal? (lookup 1 (a+1=one)) "one")
+  (check-equal? (lookup 2 (a+1=one)) #false)
+
+  (define (a+1=one+2=two) (assign 2 "two" (a+1=one)))
+  (check-not-exn a+1=one+2=two)
+  (check-equal? (lookup 1 (a+1=one+2=two)) "one")
+  (check-equal? (lookup 2 (a+1=one+2=two)) "two")
+
+  (define (a+1=uno+2=two) (assign 1 "uno" (a+1=one+2=two)))
+  (check-not-exn a+1=uno+2=two)
+  (check-equal? (lookup 1 (a+1=uno+2=two)) "uno")
+  (check-equal? (lookup 2 (a+1=uno+2=two)) "two")
+
+  (define (a+1=uno) (unassign 2 (a+1=uno+2=two)))
+  (check-not-exn a+1=uno)
+  (check-equal? (lookup 1 (a+1=uno)) "uno")
+  (check-equal? (lookup 2 (a+1=uno)) #false))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set
 
@@ -75,6 +102,44 @@
 
 (define (without elem1 elem2 set)
   (avl-tree-delete-range elem1 elem2 set))
+
+(module+ test
+
+  (define (s) (empty-set))
+  (check-not-exn s)
+  (check-equal? (in? 1 (s)) #false)
+  (check-equal? (in? 2 (s)) #false)
+  (check-equal? (in? 3 (s)) #false)
+  (check-equal? (in? 4 (s)) #false)
+  (check-equal? (in? 5 (s)) #false)
+  (check-equal? (in? 6 (s)) #false)
+
+  (define (s123) (extend 3 (extend 2 (extend 1 (s)))))
+  (check-not-exn s123)
+  (check-equal? (in? 1 (s123)) #true)
+  (check-equal? (in? 2 (s123)) #true)
+  (check-equal? (in? 3 (s123)) #true)
+  (check-equal? (in? 4 (s123)) #false)
+  (check-equal? (in? 5 (s123)) #false)
+  (check-equal? (in? 6 (s123)) #false)
+
+  (define (s123456) (extend 6 (extend 5 (extend 4 (s123)))))
+  (check-not-exn s123456)
+  (check-equal? (in? 1 (s123456)) #true)
+  (check-equal? (in? 2 (s123456)) #true)
+  (check-equal? (in? 3 (s123456)) #true)
+  (check-equal? (in? 4 (s123456)) #true)
+  (check-equal? (in? 5 (s123456)) #true)
+  (check-equal? (in? 6 (s123456)) #true)
+
+  (define (s126) (without 3 5 (s123456)))
+  (check-not-exn s126)
+  (check-equal? (in? 1 (s126)) #true)
+  (check-equal? (in? 2 (s126)) #true)
+  (check-equal? (in? 3 (s126)) #false)
+  (check-equal? (in? 4 (s126)) #false)
+  (check-equal? (in? 5 (s126)) #false)
+  (check-equal? (in? 6 (s126)) #true))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AVL Trees
@@ -131,7 +196,7 @@
   (cond
     [(empty? t) empty]
     [(node? t)
-     (define key (node-key k))
+     (define key (node-key t))
      (cond
        [(<= k key) (avl-tree-filter< k (node-left t))]
        [(> k key)
@@ -148,7 +213,7 @@
        (avl-tree-filter</append k t left-k left-v (node-right left-t)))]
     [(empty? t) (make-node left-k left-v left-t empty)]
     [(node? t)
-     (define key (node-key k))
+     (define key (node-key t))
      (cond
        [(<= k key)
         (avl-tree-filter</append k (node-left t) left-k left-v left-t)]
@@ -164,7 +229,7 @@
   (cond
     [(empty? t) empty]
     [(node? t)
-     (define key (node-key k))
+     (define key (node-key t))
      (cond
        [(>= k key) (avl-tree-filter> k (node-right t))]
        [(< k key)
@@ -179,9 +244,9 @@
      (balance-node (node-key right-t) (node-value right-t)
        (avl-tree-filter>/append k t right-k right-v (node-left right-t))
        (node-right right-t))]
-    [(empty? t) (make-node empty right-v right-t right-k)]
+    [(empty? t) (make-node right-k right-v empty right-t)]
     [(node? t)
-     (define key (node-key k))
+     (define key (node-key t))
      (cond
        [(>= k key)
         (avl-tree-filter>/append k (node-left t) right-k right-v right-t)]
@@ -198,11 +263,11 @@
     [(empty? t1) t2]
     [(empty? t2) t1]
     [(< (height t1) (height t2))
-     (balance-node (node-key t2) (node-key t2)
+     (balance-node (node-key t2) (node-value t2)
        (avl-tree-append t1 (node-left t2))
        (node-right t2))]
     [(< (height t2) (height t1))
-     (balance-node (node-key t1) (node-key t1)
+     (balance-node (node-key t1) (node-value t1)
        (node-left t1)
        (avl-tree-append (node-right t1) t2))]
     [else
@@ -252,11 +317,14 @@
     (make-node k2 v2 r t2)))
 
 (define (make-node k v l r)
-  (define h (hypothetical-height l r))
-  (node h k v l r))
-
-(define (hypothetical-height t1 t2)
-  (add1 (max (height t1) (height t2))))
+  (define h1 (height l))
+  (define h2 (height r))
+  (cond
+    [(<< h1 h2) (error 'make-node "~v is too short for ~v" l r)]
+    [(<< h2 h1) (error 'make-node "~v is too tall for ~v" l r)]
+    [else
+     (define h (add1 (max h1 h2)))
+     (node h k v l r)]))
 
 (define (height t)
   (cond
@@ -387,3 +455,41 @@
      (set-queue-rightmost! q2 empty)
      ;; Return q1.
      q1]))
+
+(module+ test
+
+  (define (q) (new-queue))
+  (check-not-exn q)
+  (check-equal? (full? (q)) #false)
+
+  (define (qa) (add-leftmost "a" (q)))
+  (check-not-exn qa)
+  (check-equal? (full? (qa)) #true)
+  (check-equal? (get-leftmost (qa)) "a")
+  (check-equal? (get-rightmost (qa)) "a")
+
+  (define (qab) (add-rightmost "b" (qa)))
+  (check-not-exn qab)
+  (check-equal? (full? (qab)) #true)
+  (check-equal? (get-leftmost (qab)) "a")
+  (check-equal? (get-rightmost (qab)) "b")
+
+  (define (qcab) (add-leftmost "c" (qab)))
+  (check-not-exn qcab)
+  (check-equal? (full? (qcab)) #true)
+  (check-equal? (get-leftmost (qcab)) "c")
+  (check-equal? (get-rightmost (qcab)) "b")
+
+  (define (qca) (drop-rightmost (qcab)))
+  (check-not-exn qca)
+  (check-equal? (full? (qca)) #true)
+  (check-equal? (get-leftmost (qca)) "c")
+  (check-equal? (get-rightmost (qca)) "a")
+
+  (define (qc) (drop-rightmost (qca)))
+  (check-not-exn qc)
+  (check-equal? (full? (qc)) #true)
+  (check-equal? (get-leftmost (qc)) "c")
+  (check-equal? (get-rightmost (qc)) "c")
+  (check-equal? (full? (drop-rightmost (qc))) #false)
+  (check-equal? (full? (drop-leftmost (qc))) #false))
