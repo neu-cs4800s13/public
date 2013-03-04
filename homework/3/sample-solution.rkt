@@ -40,7 +40,7 @@
 ;; AssocMaps can be implemented using hash tables or balanced search trees.
 ;; Here, we use a balanced search tree representation defined below.
 
-;; An AssocMap is a (Tree-of String)
+;; An AssocMap is a Tree
 
 (define (fresh-assoc)
   (empty-tree))
@@ -126,16 +126,16 @@
 ;; Sets can be implemented using balanced search trees.
 ;; Here, we use a balanced search tree representation defined below.
 
-;; A Set is a (Tree-of #true)
+;; A Set is a Tree
 
 (define (empty-set)
   (empty-tree))
 
 (define (in? elem set)
-  (tree-search elem set))
+  (equal? (tree-search elem set) "element"))
 
 (define (extend elem set)
-  (tree-insert elem #true set))
+  (tree-insert elem "element" set))
 
 (define (without elem1 elem2 set)
   (tree-delete-range elem1 elem2 set))
@@ -223,18 +223,75 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AVL Trees
 
+;; A Tree is one of:
+;; - empty
+;; - (node Key Value Tree Tree)
+(struct node [key value left right])
+;; where:
+;; - for any node N in left, left.key <= key
+;; - for any node N in right, key <= right.key
+
+;; A Key is a Number
+;; A Value is a String
+
 (define (empty-tree)
-  (hash))
+  empty)
 
 (define (tree-insert k v t)
-  (hash-set t k v))
+  (cond
+    [(empty? t) (node k v empty empty)]
+    [(node? t)
+     (define t.k (node-key t))
+     (define t.v (node-value t))
+     (define t.l (node-left t))
+     (define t.r (node-right t))
+     (cond
+       [(< k t.k) (node t.k t.v (tree-insert k v t.l) t.r)]
+       [(> k t.k) (node t.k t.v t.l (tree-insert k v t.r))]
+       [(= k t.k) (node k v t.l t.r)])]))
 
 (define (tree-search k t)
-  (hash-ref t k #false))
+  (cond
+    [(empty? t) #false]
+    [(node? t)
+     (define t.k (node-key t))
+     (cond
+       [(< k t.k) (tree-search k (node-left t))]
+       [(> k t.k) (tree-search k (node-right t))]
+       [(= k t.k) (node-value t)])]))
 
-(define (tree-delete-range k1 k2 t0)
-  (for/fold {[t t0]} {[k (in-dict-keys t0)] #:when (<= k1 k k2)}
-    (hash-remove t k)))
+(define (tree-delete-range lo hi t)
+  (cond
+    [(empty? t) empty]
+    [(node? t)
+     (define t.k (node-key t))
+     (define t.v (node-value t))
+     (define t.l (node-left t))
+     (define t.r (node-right t))
+     (cond
+       [(<= lo t.k hi)
+        (tree-append
+          (tree-delete-range lo hi t.l)
+          (tree-delete-range lo hi t.r))]
+       [else
+        (node t.k t.v
+          (tree-delete-range lo hi t.l)
+          (tree-delete-range lo hi t.r))])]))
+
+(define (tree-append t1 t2)
+  (cond
+    [(empty? t1) t2]
+    [(empty? t2) t1]
+    [else
+     (define t1.k (node-key t1))
+     (define t1.v (node-value t1))
+     (define t1.l (node-left t1))
+     (define t1.r (node-right t1))
+     (define t2.k (node-key t2))
+     (define t2.v (node-value t2))
+     (define t2.l (node-left t2))
+     (define t2.r (node-right t2))
+     (node t1.k t1.v t1.l (node t2.k t2.v (tree-append t1.r t2.l) t2.r))]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Queue
