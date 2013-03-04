@@ -281,36 +281,54 @@
           (tree-delete-range lo hi t.l)
           (tree-delete-range lo hi t.r))])]))
 
-(define (tree-append t1 t2)
+(define (tree-append l r)
   (cond
-    [(empty? t1) t2]
-    [(empty? t2) t1]
+    [(empty? l) r]
+    [(empty? r) l]
     [else
-     (define t1.k (node-key t1))
-     (define t1.v (node-value t1))
-     (define t1.l (node-left t1))
-     (define t1.r (node-right t1))
-     (define t2.k (node-key t2))
-     (define t2.v (node-value t2))
-     (define t2.l (node-left t2))
-     (define t2.r (node-right t2))
-     (unbalanced-node t1.k t1.v
-       t1.l
-       (unbalanced-node t2.k t2.v
-         (tree-append t1.r t2.l)
-         t2.r))]))
+     (define l.height (height l))
+     (define r.height (height r))
+     (define delta (- r.height l.height))
+     (cond
+       [(< delta -2)
+        (define l.k (node-key l))
+        (define l.v (node-value l))
+        (define l.l (node-left l))
+        (define l.r (node-right l))
+        (almost-balanced-node l.k l.v l.l (tree-append l.r r))]
+       [(> delta 2)
+        (define r.k (node-key r))
+        (define r.v (node-value r))
+        (define r.l (node-left r))
+        (define r.r (node-right r))
+        (almost-balanced-node r.k r.v (tree-append l r.l) r.r)]
+       [else
+        (define l.k (node-key l))
+        (define l.v (node-value l))
+        (define l.l (node-left l))
+        (define l.r (node-right l))
+        (define r.k (node-key r))
+        (define r.v (node-value r))
+        (define r.l (node-left r))
+        (define r.r (node-right r))
+        (unbalanced-node l.k l.v
+          l.l
+          (unbalanced-node r.k r.v
+            (tree-append l.r r.l)
+            r.r))])]))
 
 (define (unbalanced-node k v l r)
   (define l.height (height l))
   (define r.height (height r))
+  (define delta (- r.height l.height))
   (cond
-    [(> l.height (add1 r.height))
+    [(< delta -2)
      (define l.k (node-key l))
      (define l.v (node-value l))
      (define l.l (node-left l))
      (define l.r (node-right l))
      (almost-balanced-node l.k l.v l.l (unbalanced-node k v l.r r))]
-    [(> r.height (add1 l.height))
+    [(> delta 2)
      (define r.k (node-key r))
      (define r.v (node-value r))
      (define r.l (node-left r))
