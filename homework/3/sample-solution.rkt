@@ -264,6 +264,11 @@
        [(= k t.k) (node-value t)])]))
 
 (define (tree-delete-range lo hi t)
+  (tree-append
+    (tree-filter< lo t)
+    (tree-filter> hi t)))
+
+(define (tree-filter< k t)
   (cond
     [(empty? t) empty]
     [(node? t)
@@ -272,14 +277,20 @@
      (define t.l (node-left t))
      (define t.r (node-right t))
      (cond
-       [(<= lo t.k hi)
-        (tree-append
-          (tree-delete-range lo hi t.l)
-          (tree-delete-range lo hi t.r))]
-       [else
-        (unbalanced-node t.k t.v
-          (tree-delete-range lo hi t.l)
-          (tree-delete-range lo hi t.r))])]))
+       [(< t.k k) (unbalanced-node t.k t.v t.l (tree-filter< k t.r))]
+       [else (tree-filter< k t.l)])]))
+
+(define (tree-filter> k t)
+  (cond
+    [(empty? t) empty]
+    [(node? t)
+     (define t.k (node-key t))
+     (define t.v (node-value t))
+     (define t.l (node-left t))
+     (define t.r (node-right t))
+     (cond
+       [(> t.k k) (unbalanced-node t.k t.v (tree-filter> k t.l) t.r)]
+       [else (tree-filter> k t.r)])]))
 
 (define (tree-append l r)
   (cond
@@ -290,13 +301,13 @@
      (define r.height (height r))
      (define delta (- r.height l.height))
      (cond
-       [(< delta -2)
+       [(< delta 0)
         (define l.k (node-key l))
         (define l.v (node-value l))
         (define l.l (node-left l))
         (define l.r (node-right l))
         (almost-balanced-node l.k l.v l.l (tree-append l.r r))]
-       [(> delta 2)
+       [(> delta 0)
         (define r.k (node-key r))
         (define r.v (node-value r))
         (define r.l (node-left r))
