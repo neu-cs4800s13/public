@@ -225,11 +225,14 @@
 
 ;; A Tree is one of:
 ;; - empty
-;; - (node Key Value Tree Tree)
-(struct node [key value left right])
+;; - (node Integer Key Value Tree Tree)
+(struct node [height key value left right] #:transparent)
 ;; where:
 ;; - for any node N in left, left.key <= key
 ;; - for any node N in right, key <= right.key
+;; - height = 1 + max(left.height, right.height)
+;; - left.height <= right.height + 1
+;; - right.height <= left.height + 1
 
 ;; A Key is a Number
 ;; A Value is a String
@@ -239,16 +242,16 @@
 
 (define (tree-insert k v t)
   (cond
-    [(empty? t) (node k v empty empty)]
+    [(empty? t) (balanced-node k v empty empty)]
     [(node? t)
      (define t.k (node-key t))
      (define t.v (node-value t))
      (define t.l (node-left t))
      (define t.r (node-right t))
      (cond
-       [(< k t.k) (node t.k t.v (tree-insert k v t.l) t.r)]
-       [(> k t.k) (node t.k t.v t.l (tree-insert k v t.r))]
-       [(= k t.k) (node k v t.l t.r)])]))
+       [(< k t.k) (almost-balanced-node t.k t.v (tree-insert k v t.l) t.r)]
+       [(> k t.k) (almost-balanced-node t.k t.v t.l (tree-insert k v t.r))]
+       [(= k t.k) (balanced-node k v t.l t.r)])]))
 
 (define (tree-search k t)
   (cond
@@ -274,7 +277,7 @@
           (tree-delete-range lo hi t.l)
           (tree-delete-range lo hi t.r))]
        [else
-        (node t.k t.v
+        (unbalanced-node t.k t.v
           (tree-delete-range lo hi t.l)
           (tree-delete-range lo hi t.r))])]))
 
@@ -291,7 +294,86 @@
      (define t2.v (node-value t2))
      (define t2.l (node-left t2))
      (define t2.r (node-right t2))
-     (node t1.k t1.v t1.l (node t2.k t2.v (tree-append t1.r t2.l) t2.r))]))
+     (unbalanced-node t1.k t1.v
+       t1.l
+       (unbalanced-node t2.k t2.v
+         (tree-append t1.r t2.l)
+         t2.r))]))
+
+(define (unbalanced-node k v l r)
+  (define l.height (height l))
+  (define r.height (height r))
+  (cond
+    [(> l.height (add1 r.height))
+     (define l.k (node-key l))
+     (define l.v (node-value l))
+     (define l.l (node-left l))
+     (define l.r (node-right l))
+     (almost-balanced-node l.k l.v l.l (unbalanced-node k v l.r r))]
+    [(> r.height (add1 l.height))
+     (define r.k (node-key r))
+     (define r.v (node-value r))
+     (define r.l (node-left r))
+     (define r.r (node-right r))
+     (almost-balanced-node r.k r.v (unbalanced-node k v l r.l) r.r)]
+    [else
+     (almost-balanced-node k v l r)]))
+
+(define (almost-balanced-node k v l r)
+  (define l.height (height l))
+  (define r.height (height r))
+  (define delta (- r.height l.height))
+  (cond
+    [(= delta -2) (rotate-right l k v r)]
+    [(<= -1 delta 1) (balanced-node k v l r)]
+    [(= delta 2) (rotate-left l k v r)]
+    [else (error 'almost-balanced-node "cannot balance ~v with ~v" l r)]))
+
+(define (rotate-right l k v r)
+  (define l.k (node-key l))
+  (define l.v (node-value l))
+  (define l.l (node-left l))
+  (define l.r (node-right l))
+  (cond
+    [(> (height l.r) (height l.l))
+     (rotate-left/right l.l l.k l.v l.r k v r)]
+    [else
+     (balanced-node l.k l.v l.l (balanced-node k v l.r r))]))
+
+(define (rotate-left l k v r)
+  (define r.k (node-key r))
+  (define r.v (node-value r))
+  (define r.l (node-left r))
+  (define r.r (node-right r))
+  (cond
+    [(> (height r.l) (height r.r))
+     (rotate-left/right l k v r.l r.k r.v r.r)]
+    [else
+     (balanced-node r.k r.v (balanced-node k v l r.l) r.r)]))
+
+(define (rotate-left/right t1 k1 v1 t k2 v2 t2)
+  (define k (node-key t))
+  (define v (node-value t))
+  (define l (node-left t))
+  (define r (node-right t))
+  (balanced-node k v
+    (balanced-node k1 v1 t1 l)
+    (balanced-node k2 v2 r t2)))
+
+(define (balanced-node k v l r)
+  (define l.height (height l))
+  (define r.height (height r))
+  (cond
+    [(> l.height (add1 r.height))
+     (error 'balanced-node "~v is too large for ~v" l r)]
+    [(> r.height (add1 l.height))
+     (error 'balanced-node "~v is too small for ~v" l r)]
+    [else (node (+ 1 (max l.height r.height)) k v l r)]))
+
+(define (height t)
+  (cond
+    [(empty? t) 0]
+    [(node? t) (node-height t)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Queue
