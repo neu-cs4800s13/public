@@ -1,5 +1,4 @@
 #lang racket
-(require no-debug)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Test Setup
@@ -39,22 +38,21 @@
 ;; AssocMap
 
 ;; AssocMaps can be implemented using hash tables or balanced search trees.
-;; Here, we use immutable AVL trees.
+;; Here, we use a balanced search tree representation defined below.
 
-;; An AssocMap is an (AVL-Tree-of String)
-;; See implementation of AVL trees below.
+;; An AssocMap is a (Tree-of String)
 
 (define (fresh-assoc)
-  (empty-avl-tree))
+  (empty-tree))
 
-(define/debug (assign key val assoc-map)
-  (avl-tree-insert key val assoc-map))
+(define (assign key val assoc-map)
+  (tree-insert key val assoc-map))
 
-(define/debug (unassign key assoc-map)
-  (avl-tree-delete-range key key assoc-map))
+(define (unassign key assoc-map)
+  (tree-delete-range key key assoc-map))
 
 (define (lookup key assoc-map)
-  (avl-tree-search key assoc-map))
+  (tree-search key assoc-map))
 
 (module+ test
 
@@ -126,22 +124,21 @@
 ;; Set
 
 ;; Sets can be implemented using balanced search trees.
-;; Here, we use immutable AVL trees.
+;; Here, we use a balanced search tree representation defined below.
 
-;; A Set is an (AVL-Tree-of #true)
-;; See implementation of AVL trees below.
+;; A Set is a (Tree-of #true)
 
 (define (empty-set)
-  (empty-avl-tree))
+  (empty-tree))
 
 (define (in? elem set)
-  (avl-tree-search elem set))
+  (tree-search elem set))
 
 (define (extend elem set)
-  (avl-tree-insert elem #true set))
+  (tree-insert elem #true set))
 
 (define (without elem1 elem2 set)
-  (avl-tree-delete-range elem1 elem2 set))
+  (tree-delete-range elem1 elem2 set))
 
 (module+ test
 
@@ -226,195 +223,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AVL Trees
 
-;; An (AVL-Tree-of X) is either:
-;; - empty
-;; - (node Integer Number X (AVL-Tree-of X) (AVL-Tree-of X))
-(struct node [height key value left right] #:transparent)
-;; where:
-;; - for any node L in left, L.key <= key
-;; - for any node R in right, key <= R.key
-;; - height is the height of the tree: 1 + max(left.height, right.height)
-;; - left.height is at most 1 + right.height
-;; - right.height is at most 1 + left.height
+(define (empty-tree)
+  (hash))
 
-(define (empty-avl-tree)
-  empty)
+(define (tree-insert k v t)
+  (hash-set t k v))
 
-(define (avl-tree-search k t)
-  (cond
-    [(empty? t) #false]
-    [(node? t)
-     (define key (node-key t))
-     (cond
-       [(< k key) (avl-tree-search k (node-left t))]
-       [(> k key) (avl-tree-search k (node-right t))]
-       [(= k key) (node-value t)])]))
+(define (tree-search k t)
+  (hash-ref t k #false))
 
-(define/debug (avl-tree-insert k v t)
-  (cond
-    [(empty? t) (make-node k v empty empty)]
-    [(node? t)
-     (define key (node-key t))
-     (cond
-       [(< k key)
-        (balance-node key (node-value t)
-          (avl-tree-insert k v (node-left t))
-          (node-right t))]
-       [(> k key)
-        (balance-node key (node-value t)
-          (node-left t)
-          (avl-tree-insert k v (node-right t)))]
-       [(= k key)
-        (make-node k v
-          (node-left t)
-          (node-right t))])]))
-
-(define/debug (avl-tree-delete-range k1 k2 t)
-  (avl-tree-append
-    (avl-tree-filter< k1 t)
-    (avl-tree-filter> k2 t)))
-
-(define/debug (avl-tree-filter< k t)
-  (cond
-    [(empty? t) empty]
-    [(node? t)
-     (define key (node-key t))
-     (cond
-       [(<= k key) (avl-tree-filter< k (node-left t))]
-       [(> k key)
-        (define l (node-left t))
-        (define v (node-value t))
-        (define r (node-right t))
-        (avl-tree-filter</append k r key v l)])]))
-
-(define/debug (avl-tree-filter</append k t left-k left-v left-t)
-  (cond
-    [(<< (height t) (height left-t))
-     (balance-node (node-key left-t) (node-value left-t)
-       (node-left left-t)
-       (avl-tree-filter</append k t left-k left-v (node-right left-t)))]
-    [(empty? t) (make-node left-k left-v left-t empty)]
-    [(node? t)
-     (define key (node-key t))
-     (cond
-       [(<= k key)
-        (avl-tree-filter</append k (node-left t) left-k left-v left-t)]
-       [(> k key)
-        (define l (node-left t))
-        (define v (node-value t))
-        (define r (node-right t))
-        (balance-node left-k left-v
-          left-t
-          (avl-tree-filter</append k r key v l))])]))
-
-(define/debug (avl-tree-filter> k t)
-  (cond
-    [(empty? t) empty]
-    [(node? t)
-     (define key (node-key t))
-     (cond
-       [(>= k key) (avl-tree-filter> k (node-right t))]
-       [(< k key)
-        (define l (node-left t))
-        (define v (node-value t))
-        (define r (node-right t))
-        (avl-tree-filter>/append k l key v r)])]))
-
-(define/debug (avl-tree-filter>/append k t right-k right-v right-t)
-  (cond
-    [(<< (height t) (height right-t))
-     (balance-node (node-key right-t) (node-value right-t)
-       (avl-tree-filter>/append k t right-k right-v (node-left right-t))
-       (node-right right-t))]
-    [(empty? t) (make-node right-k right-v empty right-t)]
-    [(node? t)
-     (define key (node-key t))
-     (cond
-       [(>= k key)
-        (avl-tree-filter>/append k (node-right t) right-k right-v right-t)]
-       [(< k key)
-        (define l (node-left t))
-        (define v (node-value t))
-        (define r (node-right t))
-        (balance-node right-k right-v
-          (avl-tree-filter>/append k l key v r)
-          right-t)])]))
-
-(define/debug (avl-tree-append t1 t2)
-  (cond
-    [(empty? t1) t2]
-    [(empty? t2) t1]
-    [(< (height t1) (height t2))
-     (balance-node (node-key t2) (node-value t2)
-       (avl-tree-append t1 (node-left t2))
-       (node-right t2))]
-    [(< (height t2) (height t1))
-     (balance-node (node-key t1) (node-value t1)
-       (node-left t1)
-       (avl-tree-append (node-right t1) t2))]
-    [else
-     (balance-node (node-key t1) (node-value t1)
-       (node-left t1)
-       (balance-node (node-key t2) (node-value t2)
-         (avl-tree-append (node-right t1) (node-left t2))
-         (node-right t2)))]))
-
-(define (balance-node k v l r)
-  (define delta (- (height l) (height r)))
-  (cond
-    [(= delta -2) (rotate-left k v l r)]
-    [(<= -1 delta 1) (make-node k v l r)]
-    [(= delta 2) (rotate-right k v l r)]
-    [else (error 'balance-node "cannot balance ~v with ~v" l r)]))
-
-(define (rotate-left k v l r)
-  (define r.k (node-key r))
-  (define r.v (node-value r))
-  (define r.l (node-left r))
-  (define r.r (node-right r))
-  (cond
-    [(> (height r.l) (height r.r))
-     (rotate-left/right l k v r.l r.k r.v r.r)]
-    [else
-     (make-node r.k r.v (balance-node k v l r.l) r.r)]))
-
-(define (rotate-right k v l r)
-  (define l.k (node-key l))
-  (define l.v (node-value l))
-  (define l.l (node-left l))
-  (define l.r (node-right l))
-  (cond
-    [(< (height l.l) (height l.r))
-     (rotate-left/right l.l l.k l.v l.r k v r)]
-    [else
-     (make-node l.k l.v l.l (balance-node k v l.r r))]))
-
-(define (rotate-left/right t1 k1 v1 t k2 v2 t2)
-  (define k (node-key t))
-  (define v (node-value t))
-  (define l (node-left t))
-  (define r (node-right t))
-  (make-node k v
-    (make-node k1 v1 t1 l)
-    (make-node k2 v2 r t2)))
-
-(define (make-node k v l r)
-  (define h1 (height l))
-  (define h2 (height r))
-  (cond
-    [(<< h1 h2) (error 'make-node "~v is too short for ~v" l r)]
-    [(<< h2 h1) (error 'make-node "~v is too tall for ~v" l r)]
-    [else
-     (define h (add1 (max h1 h2)))
-     (node h k v l r)]))
-
-(define (height t)
-  (cond
-    [(empty? t) 0]
-    [(node? t) (node-height t)]))
-
-(define (<< x y)
-  (< x (sub1 y)))
+(define (tree-delete-range k1 k2 t0)
+  (for/fold {[t t0]} {[k (in-dict-keys t0)] #:when (<= k1 k k2)}
+    (hash-remove t k)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Queue
