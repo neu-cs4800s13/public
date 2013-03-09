@@ -40,7 +40,7 @@
 ;; AssocMaps can be implemented using hash tables or balanced search trees.
 ;; Here, we use a balanced search tree representation defined below.
 
-;; An AssocMap is a Tree
+;; An AssocMap is a Tree.
 
 (define (fresh-assoc)
   (empty-tree))
@@ -126,13 +126,15 @@
 ;; Sets can be implemented using balanced search trees.
 ;; Here, we use a balanced search tree representation defined below.
 
-;; A Set is a Tree
+;; A Set is a Tree.
+;; Every key in the Tree is an element of the Set.
+;; The value associated with each key is irrelevant.
 
 (define (empty-set)
   (empty-tree))
 
 (define (in? elem set)
-  (equal? (tree-search elem set) "element"))
+  (string? (tree-search elem set)))
 
 (define (extend elem set)
   (tree-insert elem "element" set))
@@ -228,8 +230,8 @@
 ;; - (node Integer Key Value Tree Tree)
 (struct node [height key value left right] #:transparent)
 ;; where:
-;; - for any node N in left, left.key <= key
-;; - for any node N in right, key <= right.key
+;; - for any node N in left, left.key < key
+;; - for any node N in right, key < right.key
 ;; - height = 1 + max(left.height, right.height)
 ;; - left.height <= right.height + 1
 ;; - right.height <= left.height + 1

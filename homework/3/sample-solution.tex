@@ -1,0 +1,204 @@
+\documentclass{article}
+
+\title{Homework 3}
+\author{Carl Eastlund}
+\date{Due \textbf{Wed., Feb. 27} at \textbf{9:00pm}.}
+
+%% Fonts
+\usepackage{newcent}
+\usepackage{fouriernc}
+\renewcommand{\ttdefault}{cmtt}
+
+%% Margins
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+
+%% Math formatting
+\usepackage{nicefrac}
+
+%% URL formatting and PDF hyperlinks
+\usepackage{url}
+\usepackage{hyperref}
+
+\begin{document}
+
+\maketitle
+
+\newcommand\link[2][http://]{\href{#1#2}{\nolinkurl{#2}}}
+\newcommand\http[1]{\link[http://]{#1}}
+\newcommand\https[1]{\link[https://]{#1}}
+\newcommand\email[1]{\link[mailto:]{#1}}
+
+\bigskip
+
+\newcommand\file\texttt
+\newcommand\code\texttt
+\newcommand\?{\mbox{\code{?}}}
+\newcommand\ty\texttt
+
+\begin{enumerate}
+
+\item Associative Maps.
+  \begin{enumerate}
+  \item An \ty{AssocMap} is a \ty{Tree}:
+
+\begin{verbatim}
+;; A Tree is one of:
+;; - empty
+;; - (node Integer Key Value Tree Tree)
+(struct node [height key value left right] #:transparent)
+;; where:
+;; - for any node N in left, left.key < key
+;; - for any node N in right, key < right.key
+;; - height = 1 + max(left.height, right.height)
+;; - left.height <= right.height + 1
+;; - right.height <= left.height + 1
+
+;; A Key is a Number
+;; A Value is a String
+\end{verbatim}
+
+  \textbf{Note:} Because the left and right subtrees of a node must have heights
+  within 1 of each other, the maximum height of a tree is \(O(\log n)\).  The
+  argument is based on the fact that we can construct the smallest possible tree
+  for any height \(n\).  For height 0, the tree is \code{empty}.  For height 1,
+  the tree is a singleton node.  For any higher height \(n\), the smallest
+  possible tree is a node with the smallest tree of height \(n-1\) on the left
+  and the smallest tree of height \(n-1\) on the right.  Adding the solutions
+  for \(n-1\) and \(n-2\) suggest the Fibonacci numbers; we can verify that the
+  smallest tree of height \(n\) has a number of leaves equal to one less than
+  the \(n+1\)st Fibonacci number.  Since the Fibonacci numbers grow
+  exponentially, the minimum number of nodes for a given height therefore grows
+  exponentially.  The maximum height for a given number of nodes is the inverse
+  of this function, and it therefore grows logarithmically.  Interestingly, we
+  get a logarithmic \emph{height} bound without guaranteeing any constant factor
+  bound for the relative \emph{size} of the left and right subtrees.
+  
+  \item
+    \begin{enumerate}
+    \item Every key/value pair occupies a node, which takes \(\Theta(1)\)
+      space.  Because keys are strictly increasing from left to right,
+      there can be no duplicate keys, so there are \(n\) nodes for \(n\) keys.
+      Therefore the total space is \(\Theta(n)\).
+    \item \code{fresh-assoc} uses \code{empty-tree} which produces \code{empty},
+      which is trivially valid.
+    \item \code{assign} uses \code{tree-insert}.  The \code{tree-insert}
+      function recurs left or right depending on the given key, which preserves
+      the order invariants on the tree.  It builds nodes with
+      \code{balanced-node} and \code{almost-balanced-node}, which automatically
+      construct the height field correctly.  Insertion can increase the height
+      of a tree by at most one; \code{almost-balanced-node} preserves the
+      balance invariants for trees that are off-balance by at most one by
+      performing one or two tree rotations as needed.
+      Therefore \code{tree-insert} produces a valid \ty{Tree} at every step.
+    \item \code{unassign} uses \code{tree-delete-range} for a singleton range.
+      The function \code{tree-delete-range} uses \code{tree-append},
+      \code{tree-filter<}, and \code{tree-filter>}.  These functions all
+      preserve the key order from the original tree.  They all ultimately use
+      \code{unbalanced-node}, \code{almost-balanced-node}, or
+      \code{balanced-node} to construct nodes, which all maintain the height
+      invariants.  The \code{unbalanced-node} function recurs on the left or
+      right to ``push'' the smaller subtree down inside the larger one to find
+      siblings of similar size, then calls \code{almost-balanced-node} when it
+      gets there.  The result is always a balanced tree.
+    \end{enumerate}
+  \item
+    \begin{enumerate}
+    \item We use worst-case analysis for our associative mappings.
+    \item \code{fresh-assoc} produces \code{empty} immediately.
+    \item \code{assign} calls \code{tree-insert}, which recurs \(O(\log n)\)
+      times and only calls \(\Theta(1)\)-time functions.
+    \item \code{unassign} calls \code{tree-append}, \code{tree-filter>}, and
+      \code{tree-filter>}.  These functions all recur at most \(O(\log n)\)
+      times.  They all also call \code{unbalanced-node}.  The running time of
+      \code{unbalanced-node} is odd; it runs in \(O(|\log m - \log n|)\) time
+      for trees of size \(m\) and \(n\).  Its running time is proportional to
+      the \emph{difference} between the heights of its arguments.  As
+      \code{tree-append}, \code{tree-filter<}, and \code{tree-filter>} recur,
+      their calls to \code{unbalanced-node} ``walk'' down the height of a tree.
+      If one call to \code{unbalanced-node} takes several steps by going from
+      height \(x+k\) to height \(x\), the next call will start at height \(x\).
+      In other words, the \emph{total} time spend in calls to
+      \code{unbalanced-node} is \(O(\log n)\) for any of \code{tree-append},
+      \code{tree-filter<}, and \code{tree-filter>}.  Therefore all three
+      functions take \(O(\log n)\) time.
+    \item \code{lookup} calls \code{tree-search} which recurs at \(O(\log n)\)
+      times and calls no helpers.
+    \end{enumerate}
+  \end{enumerate}
+
+\item
+  \begin{enumerate}
+  \item A \ty{Set} is a \ty{Tree} as defined above, in which every key
+    represents an element of the set and the values associated with keys are
+    irrelevant.
+  \item
+    \begin{enumerate}
+    \item Trees take \(\Theta(n)\) space as argued above.
+    \item \code{empty-set} calls \code{empty-tree}, which produces a valid tree
+      as argued above.
+    \item \code{extend} calls \code{tree-insert}, which produces a valid tree as
+      argued above.
+    \item \code{without} calls \code{tree-delete-range}, which produces a valid
+      tree as argued above.
+    \end{enumerate}
+  \item
+    \begin{enumerate}
+    \item Our bounds are all worst-case.
+    \item \code{empty-set} takes \(O(1)\) time trivially.
+    \item \code{in\?} calls \code{tree-search}, which takes \(O(\log n)\) time
+      as argued above.
+    \item \code{extend} calls \code{tree-insert}, which takes \(O(\log n)\) time
+      as argued above.
+    \item \code{without} calls \code{tree-delete-range}, which takes
+      \(O(\log n)\) time as argued above.
+    \end{enumerate}
+  \end{enumerate}
+
+\item
+  \begin{enumerate}
+  \item
+\begin{verbatim}
+;; A Queue is (queue Chain Chain).
+(struct queue [leftmost rightmost] #:mutable #:transparent)
+;; Either leftmost and rightmost are both empty, or they are both links.
+;; If both are links, then they are part of a single chain of links:
+;; * leftmost.left = empty
+;; * rightmost.right = empty
+;; * for any link L other than leftmost, L.left.right = L
+;; * for any link L other than rightmost, L.right.left = L
+;; * from any link L, leftmost is reachable by going left 0 or more times
+;; * from any link L, rightmost is reachable by going right 0 or more times
+;; These invariants must hold before and after any Queue operations.
+;; Note that during Queue operations, in between mutations,
+;; some or all of these invariants may be violated.
+
+;; A Chain is either empty or (link Link String Link).
+(struct link [left elem right] #:mutable #:transparent)
+\end{verbatim}
+
+  \item
+    \begin{enumerate}
+    \item A queue contains one link per value, and every link takes
+      \(\Theta(1)\) space.  The total is therefore \(\Theta(n)\) space.
+    \item \code{new-queue} produces a queue that is trivially valid.
+    \item \code{add-leftmost} maintains the left and right link invariants when
+      adding links, and therefore produces a valid queue.
+    \item \code{drop-leftmost} maintains the left and right link invariants when
+      removing links and correctly detects when the queue becomes empty; it
+      therefore produces a valid queue.
+    \item \code{add-rightmost} maintains the left and right link invariants when
+      adding links, and therefore produces a valid queue.
+    \item \code{drop-rightmost} maintains the left and right link invariants
+      when removing links and correctly detects when the queue becomes empty; it
+      therefore produces a valid queue.
+    \item \code{concatenate} maintains the left and right link invariants, and
+      ensures that every link is part of only one queue; it therefore produces a
+      valid queue.
+    \end{enumerate}
+  \item The analysis for queues is worst-case, and by inspection every operation
+    takes \(\Theta(1)\) time because there is no recursion or iteration.
+  \end{enumerate}
+
+\end{enumerate}
+
+\end{document}
