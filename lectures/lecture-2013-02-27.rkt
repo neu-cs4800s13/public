@@ -2,7 +2,7 @@
 
 (define (bounded-integer-knapsack n w v W)
   (define table (make-table (add1 n) (add1 W) #false))
-  (bounded-integer-knapsack-from table 0 n w v W))
+  (knapsack-items (bounded-integer-knapsack-from table 0 n w v W)))
 
 (define (bounded-integer-knapsack-from t i n w v W)
   (define entry (table-get t i W))
@@ -37,7 +37,7 @@
     (+ v (knapsack-value k))
     (cons i (knapsack-items k))))
 
-(struct table [width height vector])
+(struct table [width height vector] #:transparent)
 
 (define (make-table width height initial)
   (table width height (make-vector (* width height) initial)))
@@ -61,7 +61,7 @@
       (vector 10 20 30)
       (vector 50 40 30)
       55)
-    (knapsack 90 (list 0 1)))
+    (list 0 1))
 
   (check-equal?
     (bounded-integer-knapsack
@@ -69,4 +69,4 @@
       (vector 10 20 30 45)
       (vector 50 40 30 41)
       55)
-    (knapsack 91 (list 0 3))))
+    (list 0 3)))
