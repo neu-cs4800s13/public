@@ -110,13 +110,14 @@ in Racket, you may find the following functions useful:
 
     For example, the difference between \code{"cat"} and \code{"bat"} is 1
     because it takes a single \textbf{replace} operation to replace \code{"c"}
-    with \code{"b"}.  The difference between \code{"pot"} and \code{"top"} is 3
-    because we may either delete the starting \code{"p"}, swap \code{"o"} with
-    \code{"t"}, and insert a new \code{"p"} at the end; or we may insert a
-    \code{"t"} at the front, swap \code{"p"} with \code{"o"}, and delete tha
-    \code{"t"} at the end.  The options for turning \code{"pot"} into
-    \code{"top"} via a sequence of 3 swaps are not allowed, because we cannot
-    swap any given character in the string more than once.
+    with \code{"b"}.  The difference between \code{"cab"} and \code{"abc"} is 2
+    because we can remove \code{"c"} at the front and insert it again at the
+    end.  We cannot use swap twice to achieve the same length---\code{"c"} with
+    \code{"a"} and then \code{"c"} with \code{"b"}---because we cannot swap the
+    \code{"c"} more than once.  \emph{Note:} The previously
+    posted example with \code{"top"} and \code{"pot"} was in error; the
+    difference is 2: replace \code{"t"} with \code{"p"} and \code{"p"} with
+    \code{"t"}.
 
     Your solution should traverse the two given strings from left to right,
     considering one operation at a time and advancing along the strings as the
