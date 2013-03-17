@@ -1,0 +1,199 @@
+\documentclass{article}
+
+\title{Homework 3}
+\author{Carl Eastlund}
+\date{Due \textbf{Mon., Mar. 25} at \textbf{9:00pm}.}
+
+%% Fonts
+\usepackage{newcent}
+\usepackage{fouriernc}
+\renewcommand{\ttdefault}{cmtt}
+
+%% Margins
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+
+%% Math formatting
+\usepackage{nicefrac}
+
+%% URL formatting and PDF hyperlinks
+\usepackage{url}
+\usepackage{hyperref}
+
+\begin{document}
+
+\maketitle
+
+\newcommand\link[2][http://]{\href{#1#2}{\nolinkurl{#2}}}
+\newcommand\http[1]{\link[http://]{#1}}
+\newcommand\https[1]{\link[https://]{#1}}
+\newcommand\email[1]{\link[mailto:]{#1}}
+
+\begin{quotation}
+
+  \noindent \textbf{Collaboration Policy:} Your work on this assignment must be
+  your own.  You \emph{may not} copy files from other students in this class,
+  from people outside of the class, from the internet, or from any other source.
+  You \emph{may not} share files with other students in this class.
+
+  \medskip
+
+  \noindent You \emph{may} discuss the problems, concepts, and general
+  techniques used in this assignment with other students, so long as you do not
+  share actual solutions.
+
+  \medskip
+
+  \noindent If you are in doubt about what you \emph{may} and \emph{may not} do,
+  ask the course instructor before proceeding.  If you violate the collaboration
+  policy, you will receive a zero as your grade for this entire assignment and
+  you will be reported to OSCCR (\link{northeastern.edu/osccr}).
+
+\end{quotation}
+
+\bigskip
+
+\newcommand\file\texttt
+\newcommand\code\texttt
+
+\noindent
+As usual, provide the code for your solution in \file{solution.rkt} and provide
+mathematical arguments in \file{solution.tex} and \file{solution.pdf}.
+
+\bigskip
+
+\noindent
+This assignment deals with strings and characters.  For programming with strings
+in Racket, you may find the following functions useful:
+\begin{itemize}\setlength\itemsep{0pt}
+
+\item \code{(string-length str)}, which produces the length of the string
+  \code{str}.
+
+\item \code{(string-ref str i)}, which produces the \code{i}th character of
+  \code{str}, indexed from 0.
+
+\item \code{(string->list str)}, which produces a list of the characters
+  contained in the string \code{str}.
+
+\item \code{(list->string chars)}, which produces a string from a list of
+  characters \code{chars}.
+
+\item \code{(char=?~a b)}, which reports whether characters \code{a} and
+  \code{b} are the same.
+
+\item \code{(char->integer c)}, which produces the Unicode code-point number
+  corresponding to the character \code{c}.
+
+\item \code{(integer->char i)}, which produces the character corresponding to
+  the Unicode code-point number \code{i}.
+
+\end{itemize}
+
+\begin{enumerate}
+
+  \newpage
+  \item Implement \code{(difference one two)} which reports, for any two strings
+    \code{one} and \code{two}, the minimum number of operations that can be used
+    to transform \code{one} into \code{two}.  The operations to consider are as
+    follows:
+    \begin{itemize}
+    \item \textbf{delete}, which deletes a single character from \code{one}
+    \item \textbf{insert}, which inserts a single character into \code{one}
+    \item \textbf{replace}, which replaces a single character in \code{one}
+    \item \textbf{swap}, which swaps two adjacent characters in \code{one}
+    \end{itemize}
+    \emph{Note:} Once we insert, replace, or swap a character, we are not
+    allowed to change it again by deleting, replacing, or swapping it.  This
+    seemingly arbitrary restriction actually simplifies the solution, because it
+    means once we process part of a string, we never have to backtrack to
+    consider changing it again.
+
+    For example, the difference between \code{"cat"} and \code{"bat"} is 1
+    because it takes a single \textbf{replace} operation to replace \code{"c"}
+    with \code{"b"}.  The difference between \code{"pot"} and \code{"top"} is 3
+    because we may either delete the starting \code{"p"}, swap \code{"o"} with
+    \code{"t"}, and insert a new \code{"p"} at the end; or we may insert a
+    \code{"t"} at the front, swap \code{"p"} with \code{"o"}, and delete tha
+    \code{"t"} at the end.  The options for turning \code{"pot"} into
+    \code{"top"} via a sequence of 3 swaps are not allowed, because we cannot
+    swap any given character in the string more than once.
+
+    \begin{enumerate}
+
+    \item Implement a straightforward recursive solution called
+      \code{difference/recursive}.  Analyze its running time.  If its running
+      time is exponential or worse, you need only find a lower bound in the
+      sense of \(\Omega\).
+
+    \item Identify the set of recursive subproblems that
+      \code{difference/recursive} must solve.
+
+      If memoization will improve the running time of your implementation, then
+      write a memoized version of your solution called
+      \code{difference/memoized} and analyze its running time.  Your code will
+      be graded based on the relationship between \code{difference/memoized} and
+      \code{difference/recursive}; they should be the same other than the
+      changes needed to implement memoization.
+
+      Otherwise, if memoization will not improve the running time of your
+      implementation, then argue why not.
+
+    \item Identify the set of recursive subproblems that your solution chooses
+      among at each recursive step.
+
+      If a greedy choice of just one of those subproblems will suffice without
+      recursively considering the others, then write a greedy version of your
+      solution called \code{difference/greedy} and analyze its running time.
+      Argue that the greedy choice is optimal.  Base the greedy version on
+      \code{difference/memoized} if you have written it, and
+      \code{difference/recursive} otherwise.
+
+    \item Define \code{difference} to call the most efficient version of the
+      algorithm you have written thus far.
+
+    \end{enumerate}
+
+  \newpage
+  \item Implement \code{(shared one two)} which reports, for any two strings
+    \code{one} and \code{two}, the length of their longest common substring.
+    For instance, the longest common substring of \code{"abracadabra"} and
+    \code{"bric-a-brac"} is \code{"brac"}, which has length 4.
+
+    \begin{enumerate}
+
+    \item Implement a straightforward recursive solution called
+      \code{shared/recursive}.  Analyze its running time.  If its running
+      time is exponential or worse, you need only find a lower bound in the
+      sense of \(\Omega\).
+
+    \item Identify the set of recursive subproblems that
+      \code{shared/recursive} must solve.
+
+      If memoization will improve the running time of your implementation, then
+      write a memoized version of your solution called
+      \code{shared/memoized} and analyze its running time.  Your code will
+      be graded based on the relationship between \code{shared/memoized} and
+      \code{shared/recursive}; they should be the same other than the
+      changes needed to implement memoization.
+
+      Otherwise, if memoization will not improve the running time of your
+      implementation, then argue why not.
+
+    \item Identify the set of recursive subproblems that your solution chooses
+      among at each recursive step.
+
+      If a greedy choice of just one of those subproblems will suffice without
+      recursively considering the others, then write a greedy version of your
+      solution called \code{shared/greedy} and analyze its running time.
+      Argue that the greedy choice is optimal.  Base the greedy version on
+      \code{shared/memoized} if you have written it, and
+      \code{shared/recursive} otherwise.
+
+    \item Define \code{shared} to call the most efficient version of the
+      algorithm you have written thus far.
+
+    \end{enumerate}
+
+\end{enumerate}
+
+\end{document}
