@@ -89,10 +89,27 @@ in Racket, you may find the following functions useful:
 
 \end{itemize}
 
+\noindent\rule{\linewidth}{1pt}
+
+\medskip
+
+\noindent\textbf{Update:} You only need to do \textbf{2 out of 3} of the
+problems on this homework.  In addition, each problem has been simplified from
+the original posted version.
+
 \begin{enumerate}
 
   \newpage
-  \item Implement \code{(difference one two)} which reports, for any two strings
+  \item
+
+    \noindent\textbf{Update:} You only need to do \textbf{2 out of 3} of the
+    problems on this homework.  In addition, this problem has been simplified to
+    require memoization; you do not need to make any arguments about a greedy
+    version.
+
+    \rule{\linewidth}{1pt}
+
+    Implement \code{(difference one two)} which reports, for any two strings
     \code{one} and \code{two}, the minimum number of operations that can be used
     to transform \code{one} into \code{two}.  The operations to consider are as
     follows:
@@ -130,38 +147,29 @@ in Racket, you may find the following functions useful:
       time is exponential or worse, you need only find a lower bound in the
       sense of \(\Omega\).
 
-    \item Identify the set of recursive subproblems that
-      \code{difference/recursive} must solve.
-
-      If memoization will improve the running time of your implementation, then
-      write a memoized version of your solution called
-      \code{difference/memoized} and analyze its running time.  Your code will
-      be graded based on the relationship between \code{difference/memoized} and
+    \item
+      Identify the set of recursive subproblems that \code{difference/recursive}
+      must solve.  Find a way to characterize each subproblem as an index into a
+      memoization table.  Implement a memoized version of
+      \code{difference/recursive} called \code{difference}.  Your code will be
+      graded based on the relationship between \code{difference/memoized} and
       \code{difference/recursive}; they should be the same other than the
-      changes needed to implement memoization.
-
-      Otherwise, if memoization will not improve the running time of your
-      implementation, then argue why not.
-
-    \item Identify the set of recursive subproblems that your solution chooses
-      among at each recursive step.
-
-      If a greedy choice of just one of those subproblems will suffice without
-      recursively considering the others, then write a greedy version of your
-      solution called \code{difference/greedy} and analyze its running time.
-      Argue that the greedy choice is optimal.  Base the greedy version on
-      \code{difference/memoized} if you have written it, and
-      \code{difference/recursive} otherwise.  Once again, your code will be
-      graded on the relationship between \code{difference/greedy} and its
-      predecessor.
-
-    \item Define \code{difference} to call the most efficient version of the
-      algorithm you have written thus far.
+      changes needed to implement memoization.  Analyze the running time of
+      \code{difference}.
 
     \end{enumerate}
 
   \newpage
-  \item Implement \code{(shared one two)} which reports, for any two strings
+  \item
+
+    \noindent\textbf{Update:} You only need to do \textbf{2 out of 3} of the
+    problems on this homework.  In addition, this problem has been simplified to
+    require memoization; you do not need to make any arguments about a greedy
+    version.
+
+    \rule{\linewidth}{1pt}
+
+    Implement \code{(shared one two)} which reports, for any two strings
     \code{one} and \code{two}, the length of their longest common substring.
     For instance, the longest common substring of \code{"abracadabra"} and
     \code{"bric-a-brac"} is \code{"brac"}, which has length 4.
@@ -176,38 +184,30 @@ in Racket, you may find the following functions useful:
       time is exponential or worse, you need only find a lower bound in the
       sense of \(\Omega\).
 
-    \item Identify the set of recursive subproblems that
-      \code{shared/recursive} must solve.
-
-      If memoization will improve the running time of your implementation, then
-      write a memoized version of your solution called \code{shared/memoized}
-      and analyze its running time.  Your code will be graded based on the
-      relationship between \code{shared/memoized} and \code{shared/recursive};
-      they should be the same other than the changes needed to implement
-      memoization.
-
-      Otherwise, if memoization will not improve the running time of your
-      implementation, then argue why not.
-
-    \item Identify the set of recursive subproblems that your solution chooses
-      among at each recursive step.
-
-      If a greedy choice of just one of those subproblems will suffice without
-      recursively considering the others, then write a greedy version of your
-      solution called \code{shared/greedy} and analyze its running time.  Argue
-      that the greedy choice is optimal.  Base the greedy version on
-      \code{shared/memoized} if you have written it, and \code{shared/recursive}
-      otherwise.  Once again, your code will be graded on the relationship
-      between \code{shared/greedy} and its predecessor.
-
-    \item Define \code{shared} to call the most efficient version of the
-      algorithm you have written thus far.
+    \item
+      Identify the set of recursive subproblems that \code{shared/recursive}
+      must solve.  Find a way to characterize each subproblem as an index into a
+      memoization table.  Implement a memoized version of
+      \code{shared/recursive} called \code{shared}.  Your code will be graded
+      based on the relationship between \code{shared/memoized} and
+      \code{shared/recursive}; they should be the same other than the changes
+      needed to implement memoization.  Analyze the running time of
+      \code{shared}.
 
     \end{enumerate}
 
   \newpage
-  \item Implement \code{(compress str)}, which reports the minimum number of
-    bits necessary to represent the characters in the string \code{str} using a
+  \item
+
+    \noindent\textbf{Update:} You only need to do \textbf{2 out of 3} of the
+    problems on this homework.  In addition, this problem has been simplified to
+    require a specific greedy choice; you do not need to write a memoized
+    version.
+
+    \rule{\linewidth}{1pt}
+
+    Implement \code{(compress str)}, which reports the minimum number of bits
+    necessary to represent the characters in the string \code{str} using a
     simple compression system.  In this system, every character is represented
     by a unique sequence of bits.  These sequences are determined by a binary
     tree whose leaves are the unique characters used in the string.  The path to
@@ -233,32 +233,16 @@ in Racket, you may find the following functions useful:
       time is exponential or worse, you need only find a lower bound in the
       sense of \(\Omega\).
 
-    \item Identify the set of recursive subproblems that
-      \code{compress/recursive} must solve.
+    \item The \emph{weight} of a given encoding tree is the total number of
+      characters in the input string that are represented by that tree.  Argue
+      that at each step in the algorithm, combining the two encoding trees of
+      least weight ultimately yields the shortest encoding of the string.
 
-      If memoization will improve the running time of your implementation, then
-      write a memoized version of your solution called \code{compress/memoized}
-      and analyze its running time.  Your code will be graded based on the
-      relationship between \code{compress/memoized} and
-      \code{compress/recursive}; they should be the same other than the changes
-      needed to implement memoization.
-
-      Otherwise, if memoization will not improve the running time of your
-      implementation, then argue why not.
-
-    \item Identify the set of recursive subproblems that your solution chooses
-      among at each recursive step.
-
-      If a greedy choice of just one of those subproblems will suffice without
-      recursively considering the others, then write a greedy version of your
-      solution called \code{compress/greedy} and analyze its running time.
-      Argue that the greedy choice is optimal.  Base the greedy version on
-      \code{compress/memoized} if you have written it, and
-      \code{compress/recursive} otherwise.  Once again, your code will be graded
-      on the relationship between \code{shared/greedy} and its predecessor.
-
-    \item Define \code{compress} to call the most efficient version of the
-      algorithm you have written thus far.
+    \item Implement a greedy version of \code{compress/recursive} called
+      \code{compress}.  Your code will be graded based on the relationship
+      between \code{shared/memoized} and \code{shared/recursive}; they should be
+      the same other than the changes needed to make a greedy choice.  Analyze
+      the running time of \code{shared}.
 
     \end{enumerate}
 
