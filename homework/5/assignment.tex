@@ -135,15 +135,15 @@ The program needs the values of \code{new-york} and \code{up-state}, but not
 (list
   (vector
     ;; index 0:
-    'new
+    "'new"
     ;; index 1:
-    'york
+    "york"
     ;; index 2, the definition of new-york:
     (vector (box 0) (box 1))
     ;; index 3:
-    'buffalo
+    "buffalo"
     ;; index 4, the definition of up-state:
-    (cons (box 3) (box 2)))
+    (vector (box 3) (box 2)))
   (list 2 4))
 \end{verbatim}
 Note that some of the values move to new positions; every \code{Pointer} to them
