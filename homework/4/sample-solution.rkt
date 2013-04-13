@@ -79,13 +79,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Difference
 
-;; Operations:
-;; - Copy 1 char from source to target; cost = 0
-;; - Replace 1 char from source to garget; cost = 1
-;; - Insert 1 char to target; cost = 1
-;; - Delete 1 char from source; cost = 1
-;; - Swap 2 chars from source to target; cost = 1
-
 (define (difference a b)
   (define m (+ 1 (string-length a)))
   (define n (+ 1 (string-length b)))
@@ -100,63 +93,52 @@
      (multivector-set!-and-return table (list i j)
        (cond
          [(and (= i (string-length source)) (= j (string-length target))) 0]
-         [(= i (string-length source))
-          (cost-to-insert table source i target j)]
-         [(= j (string-length target))
-          (cost-to-delete table source i target j)]
+         [(= i (string-length source)) (cost-to-insert table source i target j)]
+         [(= j (string-length target)) (cost-to-delete table source i target j)]
          [else
-          (define base-cost
-            (min
+          (best
+            (list
               (cost-to-replace table source i target j)
               (cost-to-insert table source i target j)
-              (cost-to-delete table source i target j)))
-          (define cost-with-copy
-            (cond
-              [(can-copy? source i target j)
-               (min base-cost (cost-to-copy table source i target j))]
-              [else base-cost]))
-          (define cost-with-swap
-            (cond
-              [(can-swap? source i target j)
-               (min cost-with-copy (cost-to-swap table source i target j))]
-              [else cost-with-copy]))
-          cost-with-swap]))]))
+              (cost-to-delete table source i target j)
+              (cost-to-copy table source i target j)
+              (cost-to-swap table source i target j)))]))]))
 
 (define (cost-to-replace table source i target j)
-  (+ SINGLE-REPLACE-COST
-     (difference-between table source (+ 1 i) target (+ 1 j))))
+  (add1 (difference-between table source (+ 1 i) target (+ 1 j))))
 
 (define (cost-to-insert table source i target j)
-  (+ SINGLE-INSERT-COST
-     (difference-between table source i target (+ 1 j))))
+  (add1 (difference-between table source i target (+ 1 j))))
 
 (define (cost-to-delete table source i target j)
-  (+ SINGLE-DELETE-COST
-     (difference-between table source (+ 1 i) target j)))
+  (add1 (difference-between table source (+ 1 i) target j)))
 
 (define (cost-to-copy table source i target j)
-  (+ SINGLE-COPY-COST
-     (difference-between table source (+ 1 i) target (+ 1 j))))
+  (cond
+    [(char=? (string-ref source i) (string-ref target j))
+     (difference-between table source (+ 1 i) target (+ 1 j))]
+    [else #false]))
 
 (define (cost-to-swap table source i target j)
-  (+ SINGLE-SWAP-COST
-     (difference-between table source (+ 2 i) target (+ 2 j))))
+  (cond
+    [(and
+       (<= (+ 2 i) (string-length source))
+       (<= (+ 2 j) (string-length target))
+       (char=? (string-ref source i) (string-ref target (+ 1 j)))
+       (char=? (string-ref source (+ 1 i)) (string-ref target j)))
+     (add1 (difference-between table source (+ 2 i) target (+ 2 j)))]
+    [else #false]))
 
-(define (can-copy? source i target j)
-  (char=? (string-ref source i) (string-ref target j)))
+(define (best xs)
+  (cond
+    [(empty? xs) #false]
+    [else (better (first xs) (best (rest xs)))]))
 
-(define (can-swap? source i target j)
-  (and
-    (<= (+ 2 i) (string-length source))
-    (<= (+ 2 j) (string-length target))
-    (char=? (string-ref source i) (string-ref target (+ 1 j)))
-    (char=? (string-ref source (+ 1 i)) (string-ref target j))))
-
-(define SINGLE-COPY-COST 0)
-(define SINGLE-REPLACE-COST 1)
-(define SINGLE-INSERT-COST 1)
-(define SINGLE-DELETE-COST 1)
-(define SINGLE-SWAP-COST 1)
+(define (better x y)
+  (cond
+    [(not x) y]
+    [(not y) x]
+    [else (min x y)]))
 
 (module+ test
   (check-equal? (difference "cat" "cat") 0)
