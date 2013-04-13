@@ -1,0 +1,97 @@
+\documentclass{article}
+
+\title{Homework 3: Sample Solution}
+\author{Carl Eastlund}
+\date{}
+
+%% Fonts
+\usepackage{newcent}
+\usepackage{fouriernc}
+\renewcommand{\ttdefault}{cmtt}
+
+%% Margins
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+
+%% Math formatting
+\usepackage{nicefrac}
+
+%% URL formatting and PDF hyperlinks
+\usepackage{url}
+\usepackage{hyperref}
+
+\begin{document}
+
+\maketitle
+
+\newcommand\link[2][http://]{\href{#1#2}{\nolinkurl{#2}}}
+\newcommand\http[1]{\link[http://]{#1}}
+\newcommand\https[1]{\link[https://]{#1}}
+\newcommand\email[1]{\link[mailto:]{#1}}
+
+\bigskip
+
+\newcommand\file\texttt
+\newcommand\code\texttt
+\newcommand\?{\mbox{\code{?}}}
+
+\begin{enumerate}
+
+\item
+  \begin{enumerate}
+
+  \item The running time for \code{difference/recursive} is \(T(n)\), where
+    \(n\) is the sum of the lengths of the two input strings.  For
+    \code{difference-between/recursive} and its helpers, the length includes
+    only characters from indices \code{i} and \code{j} in the respective
+    strings.
+
+    The running time for \code{difference-between/recursive} can be stated as
+    this recurrence relation:
+    \[T(n) = T(n-2) + T(n-1) + T(n-1) + T(n-2) + T(n-4) + 1\]
+    Here, the first four recursive references to \(T\) correspond to the
+    replace, insert, delete, and swap operations, and the fifth corresponds to
+    the case where we ``copy'' a character by performing no operations.  We can
+    find a lower bound on \(T(n)\) by reducing all the \(T(n-1)\) and \(T(n-2)\)
+    terms with \(T(n-4)\) and combining them.  This gives us:
+    \[T(n) = 5T(n-4) + 1\]
+    This is in \(Theta(5^{\nicefrac{n}{4}})\), or
+    \(\Theta((\sqrt[4]{5})^n)\).
+
+  \item The memoization table for \code{difference} has \((m+1) \times (n+1)\)
+    entries, one for every pair of locations in the input strings of lengths
+    \(m\) and \(n\) respectively.  It takes \(\Theta(1)\) time to compute the
+    solution at each entry in terms of others, so \code{difference} runs in
+    \(O(mn)\) time.
+
+  \end{enumerate}
+
+\item
+  \begin{enumerate}
+
+  \item The running time for \code{shared/recursive} is \(T(n)\), again using
+    \(n\) to mean the sum of the lengths of the two input strings.  Again, we
+    consider the indices passed to helper functions to effectively mark the new
+    start of the string.
+
+    The running time for \code{shared-at/recursive} is \(O(n)\); it simply
+    traverses both strings as far as both have the same characters.
+
+    The running time for \code{max-shared-starting-at/recursive} can be stated
+    as this recurrence relation:
+    \[T(n) = 2T(n-1) + O(n)\]
+    In both cases where it recurs, it drops a single character off of one of its
+    inputs.  A lower bound on this recurrence is \(T(n)=2T(n-1)+\Theta(1)\),
+    which is in \(\Theta(2^n)\).
+
+  \item The two memoization tables for \code{shared} each have \((m+1) \times
+    (n+1)\) entries, one for every pair of locations in the input strings of
+    lengths \(m\) and \(n\) respectively.  Each step of both \code{shared-at}
+    and \code{max-shared-starting-at} takes \(\Theta(1)\) time to compute a
+    solution based on other entries in the table.  The running time of
+    \code{shared} is therefore \(O(mn)\).
+
+  \end{enumerate}
+
+\end{enumerate}
+
+\end{document}

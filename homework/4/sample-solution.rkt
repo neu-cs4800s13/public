@@ -118,8 +118,8 @@
          (cost-to-replace/recursive source i target j)
          (cost-to-insert/recursive source i target j)
          (cost-to-delete/recursive source i target j)
-         (cost-to-copy/recursive source i target j)
-         (cost-to-swap/recursive source i target j)))]))
+         (cost-to-swap/recursive source i target j)
+         (cost-to-copy/recursive source i target j)))]))
 
 (define (cost-to-replace table source i target j)
   (add1 (difference-between table source (+ 1 i) target (+ 1 j))))
@@ -139,18 +139,6 @@
 (define (cost-to-delete/recursive source i target j)
   (add1 (difference-between/recursive source (+ 1 i) target j)))
 
-(define (cost-to-copy table source i target j)
-  (cond
-    [(char=? (string-ref source i) (string-ref target j))
-     (difference-between table source (+ 1 i) target (+ 1 j))]
-    [else #false]))
-
-(define (cost-to-copy/recursive source i target j)
-  (cond
-    [(char=? (string-ref source i) (string-ref target j))
-     (difference-between/recursive source (+ 1 i) target (+ 1 j))]
-    [else #false]))
-
 (define (cost-to-swap table source i target j)
   (cond
     [(and
@@ -169,6 +157,18 @@
        (char=? (string-ref source i) (string-ref target (+ 1 j)))
        (char=? (string-ref source (+ 1 i)) (string-ref target j)))
      (add1 (difference-between/recursive source (+ 2 i) target (+ 2 j)))]
+    [else #false]))
+
+(define (cost-to-copy table source i target j)
+  (cond
+    [(char=? (string-ref source i) (string-ref target j))
+     (difference-between table source (+ 1 i) target (+ 1 j))]
+    [else #false]))
+
+(define (cost-to-copy/recursive source i target j)
+  (cond
+    [(char=? (string-ref source i) (string-ref target j))
+     (difference-between/recursive source (+ 1 i) target (+ 1 j))]
     [else #false]))
 
 (define (best xs)
