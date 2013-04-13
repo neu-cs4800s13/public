@@ -13,6 +13,9 @@
   (define shared-table (make-multivector (list m n) #false))
   (max-shared-starting-at max-table shared-table a 0 b 0))
 
+(define (shared/recursive a b)
+  (max-shared-starting-at/recursive a 0 b 0))
+
 (define (max-shared-starting-at mt st a i b j)
   (define entry (multivector-ref mt (list i j)))
   (cond
@@ -26,6 +29,15 @@
             (shared-at st a i b j)
             (max-shared-starting-at mt st a (add1 i) b j)
             (max-shared-starting-at mt st a i b (add1 j)))]))]))
+
+(define (max-shared-starting-at/recursive a i b j)
+  (cond
+    [(or (= i (string-length a)) (= j (string-length b))) 0]
+    [else
+     (max
+       (shared-at/recursive a i b j)
+       (max-shared-starting-at/recursive a (add1 i) b j)
+       (max-shared-starting-at/recursive a i b (add1 j)))]))
 
 (define (shared-at st a i b j)
   (define entry (multivector-ref st (list i j)))
@@ -41,11 +53,28 @@
           (add1 (shared-at st a (add1 i) b (add1 j)))]
          [else 0]))]))
 
+(define (shared-at/recursive a i b j)
+  (cond
+    [(and
+       (< i (string-length a))
+       (< j (string-length b))
+       (char=? (string-ref a i) (string-ref b j)))
+     (add1 (shared-at/recursive a (add1 i) b (add1 j)))]
+    [else 0]))
+
 (module+ test
+  (check-equal? (shared/recursive "cat" "dog") 0)
+  (check-equal? (shared/recursive "cat" "bat") 2)
+  (check-equal? (shared/recursive "star" "armor") 2)
+  (check-equal?
+    (shared/recursive "slaughter" "laughter")
+    (string-length "laughter"))
   (check-equal? (shared "cat" "dog") 0)
   (check-equal? (shared "cat" "bat") 2)
   (check-equal? (shared "star" "armor") 2)
-  (check-equal? (shared "slaughter" "laughter") (string-length "laughter")))
+  (check-equal?
+    (shared "slaughter" "laughter")
+    (string-length "laughter")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Difference
