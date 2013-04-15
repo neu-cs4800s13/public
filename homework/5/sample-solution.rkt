@@ -11,7 +11,136 @@
   (list new-memory new-roots))
 
 (define (snapshot memory root)
-  (list empty "dummy"))
+  (define pass1-state (initial-state-for memory))
+  (define pass1-tree (depth-first-search-vertex memory root pass1-state))
+  (define finished (reverse (flatten pass1-tree)))
+  (define transposed (memory-transpose memory))
+  (define pass2-state (initial-state-for transposed))
+  (define pass2-tree (depth-first-search-vertices memory finished pass2-state))
+  (define components (flatten-each pass2-tree))
+  (define order->vertex (list->vector (flatten components)))
+  (define vertex->order (invert-vertex-mapping memory order->vertex))
+  (define definitions (components->definitions memory components vertex->order))
+  (define expression (name-in-order (vector-ref vertex->order root)))
+  (list definitions expression))
+
+(define (name-in-order order)
+  (string->symbol
+    (string-append "v"
+      (number->string order))))
+
+(define (components->definitions memory components vertex->order)
+  (cond
+    [(empty? components) empty]
+    [else
+     (append (component->definitions memory (first components) vertex->order)
+       (components->definitions memory (rest components) vertex->order))]))
+
+(define (component->definitions memory component vertex->order)
+  (append
+    (vertices->defines memory component vertex->order)
+    (vertices->updates memory component vertex->order)))
+
+(define (vertices->updates memory vertices vertex->order)
+  (cond
+    [(empty? vertices) empty]
+    [else (append (vertex->updates memory (first vertices) vertex->order)
+            (vertices->updates memory (rest vertices) vertex->order))]))
+
+(define (vertices->defines memory vertices vertex->order)
+  (cond
+    [(empty? vertices) empty]
+    [else (cons (vertex->define memory (first vertices) vertex->order)
+            (vertices->defines memory (rest vertices) vertex->order))]))
+
+(define (vertex->define memory i vertex->order)
+  (define order (vector-ref vertex->order i))
+  (define name (name-in-order order))
+  (define value (vector-ref memory i))
+  (list 'define name (value->expression value vertex->order order)))
+
+(define (vertex->updates memory i vertex->order)
+  (define order (vector-ref vertex->order i))
+  (define value (vector-ref memory i))
+  (value->updates value vertex->order order))
+
+(define (value->expression value vertex->order order)
+  (cond
+    [(string? value) value]
+    [(vector? value)
+     (cons 'vector
+       (vector->expressions value vertex->order order 0))]))
+
+(define (value->updates value vertex->order order)
+  (cond
+    [(string? value) empty]
+    [(vector? value)
+     (vector->updates value vertex->order order 0)]))
+
+(define (vector->expressions v vertex->order order i)
+  (cond
+    [(>= i (vector-length v)) empty]
+    [else (cons (pointer->expression (vector-ref v i) vertex->order order)
+            (vector->expressions v vertex->order order (add1 i)))]))
+
+(define (vector->updates v vertex->order order i)
+  (cond
+    [(>= i (vector-length v)) empty]
+    [else (append (pointer->updates (vector-ref v i) i vertex->order order)
+            (vector->updates v vertex->order order (add1 i)))]))
+
+(define (pointer->expression pointer vertex->order order)
+  (define vertex (unbox pointer))
+  (define pointer-order (vector-ref vertex->order vertex))
+  (cond
+    [(>= pointer-order order) "dummy"]
+    [else (name-in-order pointer-order)]))
+
+(define (pointer->updates pointer i vertex->order order)
+  (define vertex (unbox pointer))
+  (define pointer-order (vector-ref vertex->order vertex))
+  (cond
+    [(>= pointer-order order)
+     (list
+       (list 'vector-set! (name-in-order order) i
+         (name-in-order pointer-order)))]
+    [else empty]))
+
+(define (memory-transpose memory)
+  (define n (vector-length memory))
+  (define predecessors (make-vector n empty))
+  (record-memory-predecessors predecessors memory 0)
+  (define transposed (make-vector n #false))
+  (populate-neighbors transposed predecessors 0)
+  transposed)
+
+(define (record-memory-predecessors predecessors memory i)
+  (cond
+    [(>= i (vector-length memory)) (void)]
+    [else
+     (define neighbors (memory-neighbors memory i))
+     (record-predecessors predecessors i neighbors)
+     (record-memory-predecessors predecessors memory (add1 i))]))
+
+(define (record-predecessors predecessors i neighbors)
+  (cond
+    [(empty? neighbors) (void)]
+    [else
+     (define j (first neighbors))
+     (vector-set! predecessors j
+       (cons i (vector-ref predecessors j)))
+     (record-predecessors predecessors i (rest neighbors))]))
+
+(define (populate-neighbors memory neighbors i)
+  (cond
+    [(>= i (vector-length memory)) (void)]
+    [else
+     (vector-set! memory i
+       (neighbors->value (vector-ref neighbors i)))
+     (populate-neighbors memory neighbors (add1 i))]))
+
+(define (neighbors->value neighbors)
+  (list->vector (map box neighbors)))
 
 (define (initial-state-for memory)
   (make-vector (vector-length memory) 'unseen))
@@ -59,9 +188,8 @@
 (define (depth-first-search-vertices memory roots state)
   (cond
     [(empty? roots) empty]
-    [(cons? roots)
-     (cons (depth-first-search-vertex memory (first roots) state)
-       (depth-first-search-vertices memory (rest roots) state))]))
+    [else (cons (depth-first-search-vertex memory (first roots) state)
+            (depth-first-search-vertices memory (rest roots) state))]))
 
 (define (depth-first-search-vertex memory vertex state)
   (define status (vector-ref state vertex))
@@ -86,6 +214,9 @@
     [(>= i (vector-length v)) empty]
     [else (cons (unbox (vector-ref v i))
             (vector-neighbors v (add1 i)))]))
+
+(define (flatten-each trees)
+  (map flatten trees))
 
 (define (flatten tree)
   (flatten/append tree empty))
@@ -155,13 +286,15 @@
       (vector (box 3) (box 0))
       "ladder"))
 
+  ;; Note: In this implementation, v2 and v3 are swapped from the
+  ;; version in the assignment.
   (check-equal?
     (snapshot cyclic 0)
     (list
       (list
         (list 'define 'v0 "Jacob's")
         (list 'define 'v1 "ladder")
-        (list 'define 'v2 (list 'vector 'v0 ""))
-        (list 'define 'v3 (list 'vector "ladder" 'v2))
+        (list 'define 'v2 (list 'vector 'v1 "dummy"))
+        (list 'define 'v3 (list 'vector 'v0 'v2))
         (list 'vector-set! 'v2 1 'v3))
-      'v2)))
+      'v3)))
